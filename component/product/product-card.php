@@ -93,8 +93,8 @@ function handleAddToCart_<?php echo $uniqueId; ?>() {
 function handleTitleClick_<?php echo $uniqueId; ?>() {
     const productId = '<?php echo $productId; ?>';
     if (productId) {
-        // Navigate to product detail page
-        window.location.href = '/snapshop/product/' + productId;
+        // Navigate to product detail page using simple direct link
+        window.location.href = '/snapshop/product.php?id=' + productId;
     }
 }
 </script>

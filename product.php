@@ -1,17 +1,15 @@
 <?php
-// Product Detail Page - Standalone file for individual product pages
-// This file handles the /product/{id} route
+// Product Detail Page - Simple and direct
+// Access via: /snapshop/product.php?id=13
 
 // Start session for user authentication
 session_start();
 
-// Fallback routing - check if we're accessing via direct URL
-$requestUri = $_SERVER['REQUEST_URI'] ?? '';
-$pathInfo = parse_url($requestUri, PHP_URL_PATH);
-
-// Extract product ID from URL path if .htaccess isn't working
-if (empty($_GET['id']) && preg_match('/\/product\/(\d+)/', $pathInfo, $matches)) {
-    $_GET['id'] = $matches[1];
+// Check if product ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    // Redirect to products page if no ID
+    header('Location: /snapshop/products.php');
+    exit;
 }
 
 // Include necessary components

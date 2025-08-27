@@ -5,34 +5,34 @@
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
             <!-- Logo and Brand -->
-            <a href="/" class="flex items-center space-x-2">
+            <a href="/snapshop/" class="flex items-center space-x-2">
                 <img src="assets/img/logo.svg" alt="Logo" class="w-8 h-8" />
                 <span class="text-xl font-bold text-gray-800">SnapShop</span>
             </a>
 
             <!-- Desktop Navigation -->
             <nav class="hidden md:flex space-x-6">
-                <a href="/" class="text-primary relative group">
+                <a href="/snapshop/" class="text-primary relative group">
                     Home
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-full"></span>
                 </a>
-                <a href="/snapshop/products?category=men" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=men" class="text-gray-600 hover:text-secondary relative group">
                     Men
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/products?category=women" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=women" class="text-gray-600 hover:text-secondary relative group">
                     Women
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/products?category=sale" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=sale" class="text-gray-600 hover:text-secondary relative group">
                     Sale
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/about" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/about" class="text-gray-600 hover:text-secondary relative group">
                     About Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/contact" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/contact" class="text-gray-600 hover:text-secondary relative group">
                     Contact Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
@@ -85,19 +85,19 @@
         <!-- Mobile Menu -->
         <div class="md:hidden py-4 border-t hidden" id="mobileMenu">
             <div class="space-y-3">
-                <a href="/" class="block w-full text-left text-primary relative group">
+                <a href="/snapshop/" class="block w-full text-left text-primary relative group">
                     Home
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-full"></span>
                 </a>
-                <a href="/snapshop/products?category=men" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=men" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                     Men
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/products?category=women" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=women" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                     Women
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/products?category=sale" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/products.php?category=sale" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                     Sale
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>

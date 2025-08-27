@@ -1,21 +1,2 @@
-RewriteEngine On
-
-# Enable .htaccess processing
-Options +FollowSymLinks
-
-# Set the base directory for rewrites (for snapshop subfolder)
-RewriteBase /snapshop/
-
-# Handle product routes - /snapshop/product/{id} -> product.php
-RewriteRule ^product/([0-9]+)$ product.php?id=$1 [L,QSA]
-
-# Handle products listing - /snapshop/products -> products.php
-RewriteRule ^products$ products.php [L,QSA]
-
-# Handle home page - /snapshop/ -> index.php
-RewriteRule ^$ index.php [L,QSA]
-
-# Redirect all other requests to index.php for centralized routing
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [L,QSA]
+# Simple .htaccess - no complex routing
+# Just basic file serving
