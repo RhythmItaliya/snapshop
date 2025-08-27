@@ -25,7 +25,7 @@ try {
     
     $productModel = new Product($conn);
     
-    $trending_products = $productModel->getTrendingProducts(18);
+    $trending_products = $productModel->getTrendingProducts(6);
     
     $trending_loading = false;
     
@@ -43,7 +43,7 @@ function getTrendingProducts($products) {
     if (!is_array($products)) {
         return [];
     }
-    return array_slice($products, 0, 18);
+    return array_slice($products, 0, 6);
 }
 
 $trending_products_list = getTrendingProducts($trending_products);
@@ -98,12 +98,10 @@ $trending_products_list = getTrendingProducts($trending_products);
 
         <?php if (!$trending_loading && !$trending_error && !empty($trending_products_list)): ?>
             <div class="text-center" data-aos="fade-up" data-aos-delay="400">
-                <?php echo renderButton([
-                    'variant' => 'primary',
-                    'size' => 'lg',
-                    'children' => 'View All Products',
-                    'onClick' => 'window.location.href="/snapshop/products"'
-                ]); ?>
+                <a href="http://localhost/snapshop/products.php" 
+                   class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-primary text-white hover:bg-primary/90 focus:ring-primary/50 px-6 py-3 text-base">
+                    View All
+                </a>
             </div>
         <?php endif; ?>
     </div>

@@ -28,14 +28,21 @@ $conn = setupDatabase();
         <!-- Hero Section -->
         <?php include 'component/home/hero.php'; ?>
         
+        <!-- Service Info Section -->
+        <?php include 'component/home/service-info.php'; ?>
+
         <!-- Featured Collections Section -->
         <?php include 'component/home/featured-collection.php'; ?>
         
-        <!-- Service Info Section -->
-        <?php include 'component/home/service-info.php'; ?>
-        
         <!-- Trending Products Section -->
         <?php include 'component/home/trending-products.php'; ?>
+        
+        <!-- Repasse Collections Section -->
+        <?php include 'component/home/repasse-collections.php'; ?>
+        
+        <!-- New Collection Section -->
+        <?php include 'component/home/new-collection.php'; ?>
+                
     </main>
 
     <!-- Footer Component -->
@@ -52,5 +59,11 @@ $conn = setupDatabase();
             offset: 100
         });
     </script>
+    
+    <!-- Include Login Modal -->
+    <?php include 'auth/login.php'; ?>
+    
+    <!-- Include Register Modal -->
+    <?php include 'auth/register.php'; ?>
 </body>
 </html>

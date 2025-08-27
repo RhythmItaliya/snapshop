@@ -1,5 +1,6 @@
 <?php
-// Header Component - UI only, no functionality
+session_start();
+// Header Component - with authentication logic
 ?>
 <header class="bg-white shadow-sm fixed w-full z-50">
     <div class="container mx-auto px-4">
@@ -47,11 +48,11 @@
 
                 <!-- Sign In/Sign Up Buttons (Not Logged In) -->
                 <div class="hidden sm:flex space-x-3">
-                    <button class="text-gray-600 hover:text-secondary relative group">
+                    <button onclick="openLoginModal()" class="text-gray-600 hover:text-secondary relative group">
                         Sign In
                         <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
                     </button>
-                    <button class="text-gray-600 hover:text-secondary relative group">
+                    <button onclick="openRegisterModal()" class="text-gray-600 hover:text-secondary relative group">
                         Sign Up
                         <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
                     </button>
@@ -59,7 +60,7 @@
 
                 <!-- Profile Icon (Logged In) -->
                 <div class="hidden sm:block">
-                    <a href="/profile" class="p-2 text-gray-600 hover:text-secondary transition-colors">
+                    <a href="/snapshop/profile" class="p-2 text-gray-600 hover:text-secondary transition-colors">
                         <i class="fas fa-user w-5 h-5"></i>
                     </a>
                 </div>
@@ -112,11 +113,11 @@
                 
                 <!-- Mobile Sign In/Sign Up -->
                 <div class="pt-3 space-y-2">
-                    <button class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                    <button onclick="openLoginModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                         Sign In
                         <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
                     </button>
-                    <button class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                    <button onclick="openRegisterModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                         Sign Up
                         <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
                     </button>
