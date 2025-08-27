@@ -38,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form']) && !emp
                 $userModel = new User($conn);
                 
                 // Debug: Check if user exists first
-                $userExists = $userModel->userExists($username);
+                $userExists = $userModel->usernameExists($username);
                 
                 // Attempt to authenticate user
-                $user = $userModel->authenticateUser($username, $password);
+                $user = $userModel->verifyCredentials($username, $password);
         
                         if ($user) {
                     // Login successful

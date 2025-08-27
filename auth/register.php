@@ -64,7 +64,7 @@ $loading = false;
                 $userModel = new User($conn);
                 
                 // Check if username already exists
-                if ($userModel->userExists($username)) {
+                if ($userModel->usernameExists($username)) {
                     echo json_encode(['success' => false, 'message' => 'Username already exists. Please choose a different one.']);
                     exit;
                 } elseif ($userModel->emailExists($email)) {
@@ -77,7 +77,9 @@ $loading = false;
                         'first_name' => $firstName,
                         'last_name' => $lastName,
                         'email' => $email,
-                        'password' => password_hash($password, PASSWORD_DEFAULT)
+                        'password' => password_hash($password, PASSWORD_DEFAULT),
+                        'phone' => '', // Default empty phone
+                        'address' => [] // Default empty address
                     ];
                     
                     // Debug: Log the user data being sent
