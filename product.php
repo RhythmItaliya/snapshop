@@ -405,23 +405,51 @@ if (isset($conn)) {
         // Toggle Wishlist functionality
         function handleToggleWishlist() {
             const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+            const productId = '<?php echo $productId; ?>';
             
             if (isLoggedIn) {
-                // Here you can add actual wishlist toggle functionality
-                // For now, just show success message
-                const isInWishlist = <?php echo $isInWishlist ? 'true' : 'false'; ?>;
-                const message = isInWishlist ? 'Product removed from wishlist' : 'Product added to wishlist successfully!';
-                
-                if (typeof showToast === 'function') {
-                    showToast(message, 'success', 3000);
-                } else {
-                    alert(message);
-                }
-                
-                // Reload page to update wishlist status
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                // Toggle wishlist in database
+                fetch('/snapshop/wishlist-toggle.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        product_id: productId,
+                        action: 'toggle'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const message = data.in_wishlist ? 'Product added to wishlist successfully!' : 'Product removed from wishlist';
+                        
+                        if (typeof showToast === 'function') {
+                            showToast(message, 'success', 3000);
+                        } else {
+                            alert(message);
+                        }
+                        
+                        // Reload page to update wishlist status
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        if (typeof showToast === 'function') {
+                            showToast(data.message || 'Failed to update wishlist', 'error', 3000);
+                        } else {
+                            alert(data.message || 'Failed to update wishlist');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Wishlist error:', error);
+                    if (typeof showToast === 'function') {
+                        showToast('Failed to update wishlist', 'error', 3000);
+                    } else {
+                        alert('Failed to update wishlist');
+                    }
+                });
             } else {
                 // Show warning toast for non-logged-in users
                 if (typeof showToast === 'function') {

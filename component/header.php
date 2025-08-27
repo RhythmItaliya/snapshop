@@ -50,7 +50,6 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                 <?php if (isUserLoggedIn()): ?>
                     <!-- User Menu (Logged In) -->
                     <div class="hidden sm:flex items-center space-x-3">
-                        <span class="text-gray-600 text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                         <button onclick="handleLogout()" class="text-red-600 hover:text-red-700 relative group">
                             Logout
                             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
@@ -78,10 +77,25 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                 <?php endif; ?>
 
                 <!-- Wishlist Icon -->
-                <a href="/snapshop/wishlist" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
+                <a href="/snapshop/wishlist.php" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
                     <i class="fas fa-heart w-5 h-5"></i>
                     <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        0
+                        <?php 
+                        if (isset($_SESSION['user_id'])) {
+                            require_once __DIR__ . '/../modal/wishlist.model.php';
+                            require_once __DIR__ . '/../config/database.php';
+                            $conn = getDatabaseConnection();
+                            if ($conn) {
+                                $wishlistModel = new Wishlist($conn);
+                                echo $wishlistModel->getWishlistCount($_SESSION['user_id']);
+                                $conn->close();
+                            } else {
+                                echo '0';
+                            }
+                        } else {
+                            echo '0';
+                        }
+                        ?>
                     </span>
                 </a>
 
@@ -123,15 +137,18 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
                 
+                <!-- Mobile Wishlist Link -->
+                <a href="/snapshop/wishlist.php" class="block w-full text-left text-gray-600 hover:text-red-500 relative group">
+                    Wishlist
+                    <span class="absolute bottom-0 left-0 h-0.5 bg-red-500 w-0 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                
                 <?php if (isUserLoggedIn()): ?>
                     <!-- Mobile User Menu (Logged In) -->
                     <div class="pt-3 space-y-2">
-                        <div class="text-gray-600 text-sm px-3 py-2">
-                            Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>
-                        </div>
                         <a href="/snapshop/profile.php" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                             Profile
-                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                            <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                         </a>
                         <button onclick="handleLogout()" class="block w-full text-left text-red-600 hover:text-red-700 relative group">
                             Logout

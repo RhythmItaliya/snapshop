@@ -76,53 +76,104 @@ $productId = $product['id'] ?? $product['_id'] ?? '';
 </div>
 
 <script>
-function handleAddToCart_<?php echo $uniqueId; ?>() {
-    const productId = '<?php echo $productId; ?>';
-    const isLoggedIn = <?php echo isUserLoggedIn() ? 'true' : 'false'; ?>;
-    
-    if (productId) {
-        if (isLoggedIn) {
-            // Check if toast function exists (from toast.php)
-            if (typeof showToast === 'function') {
-                showToast('Product added to cart successfully!', 'success', 3000);
-            } else {
-                alert('Product added to cart successfully!');
-            }
+        // Add to Cart functionality
+        function handleAddToCart_<?php echo $uniqueId; ?>() {
+            const productId = '<?php echo $productId; ?>';
+            const isLoggedIn = <?php echo isUserLoggedIn() ? 'true' : 'false'; ?>;
             
-            // Here you can add actual cart functionality
-            // For now, just show success message
-        } else {
-            // Show warning toast for non-logged-in users
-            if (typeof showToast === 'function') {
-                showToast('Please login to add items to cart', 'warning', 4000);
-            } else {
-                alert('Please login to add items to cart');
-            }
-            
-            // Open login modal after a short delay
-            setTimeout(() => {
-                if (typeof openLoginModal === 'function') {
-                    openLoginModal();
+            if (productId) {
+                if (isLoggedIn) {
+                    // Check if toast function exists (from toast.php)
+                    if (typeof showToast === 'function') {
+                        showToast('Product added to cart successfully!', 'success', 3000);
+                    } else {
+                        alert('Product added to cart successfully!');
+                    }
+                    
+                    // Here you can add actual cart functionality
+                    // For now, just show success message
+                } else {
+                    // Show warning toast for non-logged-in users
+                    if (typeof showToast === 'function') {
+                        showToast('Please login to add items to cart', 'warning', 4000);
+                    } else {
+                        alert('Please login to add items to cart');
+                    }
+                    
+                    // Open login modal after a short delay
+                    setTimeout(() => {
+                        if (typeof openLoginModal === 'function') {
+                            openLoginModal();
+                        }
+                    }, 1000);
                 }
-            }, 1000);
+            }
         }
-    }
-}
 
-function handleAddToWishlist_<?php echo $uniqueId; ?>() {
-    const productId = '<?php echo $productId; ?>';
-    if (productId) {
-        // Check if toast function exists (from toast.php)
-        if (typeof showToast === 'function') {
-            showToast('Product added to wishlist!', 'success', 3000);
-        } else {
-            alert('Product added to wishlist!');
+        // Toggle Wishlist functionality
+        function handleToggleWishlist_<?php echo $uniqueId; ?>() {
+            const productId = '<?php echo $productId; ?>';
+            const isLoggedIn = <?php echo isUserLoggedIn() ? 'true' : 'false'; ?>;
+            
+            if (isLoggedIn) {
+                // Toggle wishlist in database
+                fetch('/snapshop/wishlist-toggle.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        product_id: productId,
+                        action: 'toggle'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const message = data.in_wishlist ? 'Product added to wishlist!' : 'Product removed from wishlist';
+                        
+                        if (typeof showToast === 'function') {
+                            showToast(message, 'success', 3000);
+                        } else {
+                            alert(message);
+                        }
+                        
+                        // Reload page to update wishlist status
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        if (typeof showToast === 'function') {
+                            showToast(data.message || 'Failed to update wishlist', 'error', 3000);
+                        } else {
+                            alert(data.message || 'Failed to update wishlist');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Wishlist error:', error);
+                    if (typeof showToast === 'function') {
+                        showToast('Failed to update wishlist', 'error', 3000);
+                    } else {
+                        alert('Failed to update wishlist');
+                    }
+                });
+            } else {
+                // Show warning toast for non-logged-in users
+                if (typeof showToast === 'function') {
+                    showToast('Please login to manage wishlist', 'warning', 4000);
+                } else {
+                    alert('Please login to manage wishlist');
+                }
+                
+                // Open login modal after a short delay
+                setTimeout(() => {
+                    if (typeof openLoginModal === 'function') {
+                        openLoginModal();
+                    }
+                }, 1000);
+            }
         }
-        
-        // Here you can add actual wishlist functionality
-        // For now, just show success message
-    }
-}
 
 function handleLoginRequired_<?php echo $uniqueId; ?>() {
     // Check if toast function exists
