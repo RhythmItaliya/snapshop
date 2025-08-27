@@ -1,0 +1,68 @@
+# Environment and configuration files
+.env
+.env.local
+.env.production
+.env.staging
+config/environment.php
+
+# Database files
+*.sql
+*.sqlite
+*.db
+database/connection.php
+
+# Dependencies
+/vendor/
+/node_modules/
+package-lock.json
+
+# Logs
+*.log
+logs/
+error_log
+
+# Cache and temporary files
+cache/
+tmp/
+temp/
+*.tmp
+*.cache
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Uploaded files (if any)
+uploads/
+public/uploads/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Compiled assets (if using build tools)
+dist/
+build/
+
+# PHP specific
+*.php~
+*.php.bak
+composer.phar
+
+# Security
+*.pem
+*.key
+*.crt

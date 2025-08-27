@@ -1,0 +1,27 @@
+{
+  "name": "snapshop-php",
+  "version": "1.0.0",
+  "description": "SnapShop PHP Version",
+  "main": "index.php",
+  "scripts": {
+    "build": "tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --watch",
+    "build:prod": "tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
+  },
+  "keywords": [
+    "php",
+    "tailwind",
+    "ecommerce"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aos": "^2.3.4",
+    "jquery": "^3.7.1",
+    "slick-carousel": "^1.8.1"
+  }
+}
