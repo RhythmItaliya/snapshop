@@ -38,6 +38,12 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                     Contact Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
+                <?php if (isUserLoggedIn()): ?>
+                <a href="/snapshop/profile.php" class="text-gray-600 hover:text-secondary relative group">
+                    Profile
+                    <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <?php endif; ?>
             </nav>
 
             <!-- Right Side Actions -->
@@ -212,9 +218,9 @@ function handleLogout() {
                     showToast('Logged out successfully', 'success', 3000);
                 }
                 
-                // Refresh page to update header
+                // Redirect to homepage with success message
                 setTimeout(() => {
-                    window.location.reload();
+                    window.location.href = '/snapshop/?logout=success';
                 }, 1000);
             }
         })

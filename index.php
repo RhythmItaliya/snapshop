@@ -3,6 +3,12 @@
 // Product and products routing is handled by .htaccess
 session_start();
 
+// Handle logout success message
+$logoutMessage = '';
+if (isset($_GET['logout']) && $_GET['logout'] === 'success') {
+    $logoutMessage = 'You have been successfully logged out!';
+}
+
 // Include required files for home page
 require_once 'config/index.php';
 $conn = setupDatabase();
@@ -62,6 +68,16 @@ $conn = setupDatabase();
     
     <!-- Include Toast Notifications -->
     <?php include 'component/ui/toast.php'; ?>
+    
+    <!-- Show logout success message if exists -->
+    <?php if ($logoutMessage): ?>
+    <script>
+        // Show logout success toast
+        if (typeof showToast === 'function') {
+            showToast('<?php echo addslashes($logoutMessage); ?>', 'success', 5000);
+        }
+    </script>
+    <?php endif; ?>
     
     <!-- Include Login Modal -->
     <?php include 'auth/login.php'; ?>

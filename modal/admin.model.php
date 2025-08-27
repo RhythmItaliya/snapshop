@@ -4,11 +4,11 @@ class Admin {
     
     public function __construct($db_connection) {
         $this->conn = $db_connection;
-        $this->createTable();
-        $this->createDefaultAdmin();
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create admin table if it doesn't exist
+    public function createTable() {
         $sql = "CREATE TABLE IF NOT EXISTS admins (
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(50) UNIQUE NOT NULL,
@@ -33,6 +33,9 @@ class Admin {
         } else {
             // Error creating table
         }
+        
+        // Create default admin after table is created
+        $this->createDefaultAdmin();
     }
     
     private function createDefaultAdmin() {

@@ -4,10 +4,11 @@ class Product {
     
     public function __construct($db_connection) {
         $this->conn = $db_connection;
-        $this->createTable();
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create products table if it doesn't exist
+    public function createTable() {
         // Create products table first (without foreign keys initially)
         $products_sql = "CREATE TABLE IF NOT EXISTS products (
             id INT AUTO_INCREMENT PRIMARY KEY,

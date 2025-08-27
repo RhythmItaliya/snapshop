@@ -2,12 +2,13 @@
 class Order {
     private $conn;
     
-    public function __construct($db_connection) {
-        $this->conn = $db_connection;
-        $this->createTable();
+    public function __construct($conn) {
+        $this->conn = $conn;
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create order tables if they don't exist
+    public function createTable() {
         // Create orders table first (without foreign keys initially)
         $orders_sql = "CREATE TABLE IF NOT EXISTS orders (
             id INT AUTO_INCREMENT PRIMARY KEY,

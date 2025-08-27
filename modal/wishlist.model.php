@@ -2,12 +2,13 @@
 class Wishlist {
     private $conn;
     
-    public function __construct($db_connection) {
-        $this->conn = $db_connection;
-        $this->createTable();
+    public function __construct($conn) {
+        $this->conn = $conn;
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create wishlist tables if they don't exist
+    public function createTable() {
         // Create wishlists table first (without foreign keys initially)
         $wishlists_sql = "CREATE TABLE IF NOT EXISTS wishlists (
             id INT AUTO_INCREMENT PRIMARY KEY,

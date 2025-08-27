@@ -2,12 +2,13 @@
 class Contact {
     private $conn;
     
-    public function __construct($db_connection) {
-        $this->conn = $db_connection;
-        $this->createTable();
+    public function __construct($conn) {
+        $this->conn = $conn;
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create contact table if it doesn't exist
+    public function createTable() {
         $sql = "CREATE TABLE IF NOT EXISTS contacts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(100) NOT NULL,

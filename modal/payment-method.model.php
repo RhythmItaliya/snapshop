@@ -2,12 +2,13 @@
 class PaymentMethod {
     private $conn;
     
-    public function __construct($db_connection) {
-        $this->conn = $db_connection;
-        $this->createTable();
+    public function __construct($conn) {
+        $this->conn = $conn;
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create payment method table if it doesn't exist
+    public function createTable() {
         $sql = "CREATE TABLE IF NOT EXISTS payment_methods (
             id INT AUTO_INCREMENT PRIMARY KEY,
             customer_id VARCHAR(255) NOT NULL,

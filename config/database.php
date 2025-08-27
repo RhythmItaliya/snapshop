@@ -81,43 +81,93 @@ function autoSetupDatabase($conn) {
         require_once __DIR__ . '/../modal/wishlist.model.php';
         
         // Initialize models in order (tables that others depend on first)
-        error_log("Creating users table...");
-        new User($conn);        // users table first
+        try {
+            error_log("Creating users table...");
+            $userModel = new User($conn);
+            $userModel->createTable();        // users table first
+        } catch (Exception $e) {
+            error_log("Error creating users table: " . $e->getMessage());
+        }
         
-        error_log("Creating products table...");
-        new Product($conn);      // products table second
+        try {
+            error_log("Creating products table...");
+            $productModel = new Product($conn);
+            $productModel->createTable();      // products table second
+        } catch (Exception $e) {
+            error_log("Error creating products table: " . $e->getMessage());
+        }
         
-        error_log("Creating admin table...");
-        new Admin($conn);        // admins table
+        try {
+            error_log("Creating admin table...");
+            $adminModel = new Admin($conn);
+            $adminModel->createTable();        // admins table
+        } catch (Exception $e) {
+            error_log("Error creating admin table: " . $e->getMessage());
+        }
         
-        error_log("Creating card table...");
-        new Card($conn);         // cards table
+        try {
+            error_log("Creating card table...");
+            $cardModel = new Card($conn);
+            $cardModel->createTable();         // cards table
+        } catch (Exception $e) {
+            error_log("Error creating card table: " . $e->getMessage());
+        }
         
-        error_log("Creating cart table...");
-        new Cart($conn);         // carts and cart_items tables
+        try {
+            error_log("Creating cart table...");
+            $cartModel = new Cart($conn);
+            $cartModel->createTable();         // carts and cart_items tables
+        } catch (Exception $e) {
+            error_log("Error creating cart table: " . $e->getMessage());
+        }
         
-        error_log("Creating contact table...");
-        new Contact($conn);      // contacts table
+        try {
+            error_log("Creating contact table...");
+            $contactModel = new Contact($conn);
+            $contactModel->createTable();      // contacts table
+        } catch (Exception $e) {
+            error_log("Error creating contact table: " . $e->getMessage());
+        }
         
-        error_log("Creating order table...");
-        new Order($conn);        // orders and order_items tables
+        try {
+            error_log("Creating order table...");
+            $orderModel = new Order($conn);
+            $orderModel->createTable();        // orders and order_items tables
+        } catch (Exception $e) {
+            error_log("Error creating order table: " . $e->getMessage());
+        }
         
-        error_log("Creating payment method table...");
-        new PaymentMethod($conn); // payment_methods table
+        try {
+            error_log("Creating payment method table...");
+            $paymentMethodModel = new PaymentMethod($conn);
+            $paymentMethodModel->createTable(); // payment_methods table
+        } catch (Exception $e) {
+            error_log("Error creating payment method table: " . $e->getMessage());
+        }
         
-        error_log("Creating wishlist table...");
-        new Wishlist($conn);     // wishlists and wishlist_products tables
+        try {
+            error_log("Creating wishlist table...");
+            $wishlistModel = new Wishlist($conn);
+            $wishlistModel->createTable();     // wishlists and wishlist_products tables
+        } catch (Exception $e) {
+            error_log("Error creating wishlist table: " . $e->getMessage());
+        }
         
         // Load and run product seeder
-        error_log("Seeding product data...");
-        require_once __DIR__ . '/product-seeder.php';
-        seedProducts($conn);
+        try {
+            error_log("Seeding product data...");
+            require_once __DIR__ . '/product-seeder.php';
+            seedProducts($conn);
+        } catch (Exception $e) {
+            error_log("Error seeding products: " . $e->getMessage());
+        }
         
         error_log("Database auto-setup completed successfully!");
         
     } catch (Exception $e) {
         error_log("Database auto-setup error: " . $e->getMessage());
         error_log("Stack trace: " . $e->getTraceAsString());
+        // Don't crash the site, just log the error
     }
 }
 

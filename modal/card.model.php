@@ -2,12 +2,13 @@
 class Card {
     private $conn;
     
-    public function __construct($db_connection) {
-        $this->conn = $db_connection;
-        $this->createTable();
+    public function __construct($conn) {
+        $this->conn = $conn;
+        // Removed automatic table creation to prevent conflicts
     }
     
-    private function createTable() {
+    // Create card table if it doesn't exist
+    public function createTable() {
         // Create cards table (without foreign key initially)
         $sql = "CREATE TABLE IF NOT EXISTS cards (
             id INT AUTO_INCREMENT PRIMARY KEY,
