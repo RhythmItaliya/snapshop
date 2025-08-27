@@ -41,8 +41,8 @@ $action = $input['action'];
 $userId = $_SESSION['user_id'];
 
 // Include necessary files
-require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/modal/wishlist.model.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../modal/wishlist.model.php';
 
 try {
     // Get database connection

@@ -28,7 +28,7 @@ if ($isLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action
         if ($conn) {
             $wishlistModel = new Wishlist($conn);
             $wishlistModel->clearWishlist($_SESSION['user_id']);
-            $success = 'Wishlist cleared successfully!';
+            // Don't set success message, only use toast
             $conn->close();
         }
     } catch (Exception $e) {
@@ -75,7 +75,7 @@ $wishlistCount = count($wishlist);
     <!-- Include Header -->
     <?php include 'component/header.php'; ?>
     
-    <div class="pt-20">
+    <div>
         <div class="container mx-auto px-4 py-16">
             <!-- Header Section -->
             <div class="flex items-center justify-between mb-8 mt-8">
@@ -87,13 +87,6 @@ $wishlistCount = count($wishlist);
                     </button>
                 <?php endif; ?>
             </div>
-
-            <!-- Success Message -->
-            <?php if ($success): ?>
-                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                    <?php echo htmlspecialchars($success); ?>
-                </div>
-            <?php endif; ?>
 
             <!-- Loading State -->
             <?php if ($loading): ?>
@@ -195,6 +188,13 @@ $wishlistCount = count($wishlist);
                 form.innerHTML = '<input type="hidden" name="action" value="clear_wishlist">';
                 document.body.appendChild(form);
                 form.submit();
+                
+                // Show success toast after form submission
+                setTimeout(() => {
+                    if (typeof showToast === 'function') {
+                        showToast('Wishlist cleared successfully!', 'success', 3000);
+                    }
+                }, 500);
             }
         }
     </script>

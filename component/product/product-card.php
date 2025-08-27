@@ -117,7 +117,7 @@ $productId = $product['id'] ?? $product['_id'] ?? '';
             
             if (isLoggedIn) {
                 // Toggle wishlist in database
-                fetch('/snapshop/wishlist-toggle.php', {
+                fetch('/snapshop/api/wishlist-toggle.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
