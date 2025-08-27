@@ -11,7 +11,8 @@ if (isset($_COOKIE['token'])) {
     setcookie('token', '', time() - 3600, '/');
 }
 
-// Redirect to home page
-header('Location: /snapshop/');
+// Return JSON response for JavaScript handling
+header('Content-Type: application/json');
+echo json_encode(['success' => true, 'message' => 'Logged out successfully']);
 exit;
 ?>

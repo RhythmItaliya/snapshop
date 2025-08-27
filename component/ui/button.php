@@ -13,6 +13,7 @@ class Button {
     private $className;
     private $onClick;
     private $type;
+    private $id;
     private $props;
 
     public function __construct($props = []) {
@@ -26,6 +27,7 @@ class Button {
         $this->className = $props['className'] ?? '';
         $this->onClick = $props['onClick'] ?? '';
         $this->type = $props['type'] ?? 'button';
+        $this->id = $props['id'] ?? '';
         $this->props = $props;
     }
 
@@ -56,9 +58,10 @@ class Button {
 
         $disabledAttr = ($this->disabled || $this->loading) ? 'disabled' : '';
         $onClickAttr = $this->onClick ? "onclick=\"{$this->onClick}\"" : '';
+        $idAttr = $this->id ? "id=\"{$this->id}\"" : '';
 
         return "
-        <button type=\"{$this->type}\" class=\"{$classes}\" {$disabledAttr} {$onClickAttr}>
+        <button type=\"{$this->type}\" class=\"{$classes}\" {$disabledAttr} {$onClickAttr} {$idAttr}>
             " . ($this->loading ? "
             <div class=\"w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2\"></div>
             " : '') . "

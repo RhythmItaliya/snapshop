@@ -2,12 +2,18 @@
 // Login Modal Component - to be included in home page
 session_start();
 
+// Include UI components
+require_once __DIR__ . '/../component/ui/input.php';
+require_once __DIR__ . '/../component/ui/button.php';
+
 // Handle form submission
 $error = '';
 $success = '';
 $loading = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
+// Only process form submission if it's a POST request with login_form
+// Also check if it's an AJAX request to prevent unnecessary processing
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form']) && !empty($_POST['username'])) {
     $loading = true;
     
     $username = trim($_POST['username'] ?? '');
@@ -15,9 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
     
     // Validation
     if (empty($username)) {
-        $error = 'Username is required';
+        echo json_encode(['success' => false, 'message' => 'Username is required']);
+        exit;
     } elseif (empty($password)) {
-        $error = 'Password is required';
+        echo json_encode(['success' => false, 'message' => 'Password is required']);
+        exit;
     } else {
         try {
             // Include database connection
@@ -29,29 +37,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
             if ($conn) {
                 $userModel = new User($conn);
                 
+                // Debug: Check if user exists first
+                $userExists = $userModel->userExists($username);
+                
                 // Attempt to authenticate user
                 $user = $userModel->authenticateUser($username, $password);
-                
-                if ($user) {
+        
+                        if ($user) {
                     // Login successful
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['email'] = $user['email'] ?? '';
                     
-                    $success = 'Login successful! Welcome back!';
+                    // Generate a simple token (in production, use proper JWT)
+                    $token = bin2hex(random_bytes(32));
+                    $_SESSION['token'] = $token;
                     
-                    // Redirect after a short delay
-                    header("Refresh: 2; url=/snapshop/");
+                    // Return success response for JavaScript handling
+                    echo json_encode(['success' => true, 'token' => $token, 'user' => $user]);
+                    exit;
                 } else {
-                    $error = 'Invalid username or password';
+                    // Return error response
+                    echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
+                    exit;
                 }
                 
                 $conn->close();
             } else {
-                $error = 'Database connection failed';
+                echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+                exit;
             }
         } catch (Exception $e) {
-            $error = 'An error occurred during login';
+            echo json_encode(['success' => false, 'message' => 'An error occurred during login']);
+            exit;
         }
     }
     
@@ -72,83 +90,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
             </button>
             
             <!-- Header -->
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Login</h2>
-            
-            <!-- Success/Error Messages -->
-            <?php if (!empty($success)): ?>
-                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    <?php echo htmlspecialchars($success); ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($error)): ?>
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    <?php echo htmlspecialchars($error); ?>
-                </div>
-            <?php endif; ?>
-            
+            <h2 class="text-2xl font-bold text-primary mb-6">Login</h2>
+        
             <!-- Login Form -->
-            <form method="POST" class="space-y-6">
+            <form id="loginForm" class="space-y-6">
                 <input type="hidden" name="login_form" value="1">
                 <!-- Username Field -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="username"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your username"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'Username',
+                        'type' => 'text',
+                        'name' => 'username',
+                        'value' => htmlspecialchars($_POST['username'] ?? ''),
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your username'
+                    ]); ?>
                 </div>
                 
                 <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Password
-                    </label>
-                    <div class="relative">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                            disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                            autocomplete="current-password"
-                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                            placeholder="Enter your password"
-                        />
-                        <button
-                            type="button"
-                            onclick="togglePasswordVisibility()"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                            disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        >
-                            <i class="fas fa-eye" id="passwordIcon"></i>
-                        </button>
-                    </div>
+                    <?php echo renderInput([
+                        'label' => 'Password',
+                        'type' => 'password',
+                        'name' => 'password',
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your password',
+                        'iconRight' => '<button type="button" id="passwordToggle" onclick="togglePasswordVisibility()" class="text-neutral hover:text-primary transition-colors" ' . ($loading ? 'disabled' : '') . '>Show</button>'
+                    ]); ?>
                 </div>
                 
                 <!-- Submit Button -->
                 <div class="flex items-center justify-between">
-                    <button
-                        type="submit"
-                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                    >
-                        <?php if ($loading): ?>
-                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                            Logging in...
-                        <?php else: ?>
-                            Login
-                        <?php endif; ?>
-                    </button>
+                    <?php echo renderButton([
+                        'type' => 'submit',
+                        'variant' => 'primary',
+                        'size' => 'lg',
+                        'className' => 'w-full',
+                        'disabled' => $loading,
+                        'loading' => $loading,
+                        'children' => $loading ? 'Logging in...' : 'Login',
+                        'id' => 'loginSubmitBtn'
+                    ]); ?>
                 </div>
                 
                 <!-- Register Link -->
@@ -184,15 +168,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
         }
         
         function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const passwordIcon = document.getElementById('passwordIcon');
+            const passwordInput = document.querySelector('#loginForm input[name="password"]');
+            const passwordToggle = document.getElementById('passwordToggle');
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                passwordIcon.className = 'fas fa-eye-slash';
+                passwordToggle.textContent = 'Hide';
             } else {
                 passwordInput.type = 'password';
-                passwordIcon.className = 'fas fa-eye';
+                passwordToggle.textContent = 'Show';
             }
         }
         
@@ -208,5 +192,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login_form'])) {
             if (e.key === 'Escape') {
                 closeLoginModal();
             }
+        });
+        
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            const password = formData.get('password');
+            
+            // Show loading state
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>Logging in...';
+            submitBtn.disabled = true;
+            
+            // Send login request
+            fetch('/snapshop/auth/login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `login_form=1&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store token in localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user_id', data.user.id);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('email', data.user.email || '');
+                    
+                    // Show success message
+                    if (typeof showToast === 'function') {
+                        showToast('Login successful! Welcome back!', 'success', 3000);
+                    }
+                    
+                    // Close modal and refresh page to update header
+                    setTimeout(() => {
+                        closeLoginModal();
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Show error message
+                    if (typeof showToast === 'function') {
+                        showToast(data.message || 'Login failed', 'error', 5000);
+                    }
+                    
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('An error occurred during login', 'error', 5000);
+                }
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
         });
     </script>

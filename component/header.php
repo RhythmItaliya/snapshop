@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../auth/auth-helper.php';
 // Header Component - with authentication logic
 ?>
 <header class="bg-white shadow-sm fixed w-full z-50">
@@ -46,24 +47,35 @@ session_start();
                     <i class="fas fa-bars w-5 h-5"></i>
                 </button>
 
-                <!-- Sign In/Sign Up Buttons (Not Logged In) -->
-                <div class="hidden sm:flex space-x-3">
-                    <button onclick="openLoginModal()" class="text-gray-600 hover:text-secondary relative group">
-                        Sign In
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
-                    </button>
-                    <button onclick="openRegisterModal()" class="text-gray-600 hover:text-secondary relative group">
-                        Sign Up
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
-                    </button>
-                </div>
-
-                <!-- Profile Icon (Logged In) -->
-                <div class="hidden sm:block">
-                    <a href="/snapshop/profile" class="p-2 text-gray-600 hover:text-secondary transition-colors">
-                        <i class="fas fa-user w-5 h-5"></i>
-                    </a>
-                </div>
+                <?php if (isUserLoggedIn()): ?>
+                    <!-- User Menu (Logged In) -->
+                    <div class="hidden sm:flex items-center space-x-3">
+                        <span class="text-gray-600 text-sm">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                        <button onclick="handleLogout()" class="text-red-600 hover:text-red-700 relative group">
+                            Logout
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                    </div>
+                    
+                    <!-- Profile Icon (Logged In) -->
+                    <div class="hidden sm:block">
+                        <a href="/snapshop/profile.php" class="p-2 text-gray-600 hover:text-secondary transition-colors">
+                            <i class="fas fa-user w-5 h-5"></i>
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <!-- Sign In/Sign Up Buttons (Not Logged In) -->
+                    <div class="hidden sm:flex space-x-3">
+                        <button onclick="openLoginModal()" class="text-gray-600 hover:text-secondary relative group">
+                            Sign In
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                        <button onclick="openRegisterModal()" class="text-gray-600 hover:text-secondary relative group">
+                            Sign Up
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Wishlist Icon -->
                 <a href="/snapshop/wishlist" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
@@ -111,26 +123,114 @@ session_start();
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
                 
-                <!-- Mobile Sign In/Sign Up -->
-                <div class="pt-3 space-y-2">
-                    <button onclick="openLoginModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
-                        Sign In
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
-                    </button>
-                    <button onclick="openRegisterModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
-                        Sign Up
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
-                    </button>
-                </div>
+                <?php if (isUserLoggedIn()): ?>
+                    <!-- Mobile User Menu (Logged In) -->
+                    <div class="pt-3 space-y-2">
+                        <div class="text-gray-600 text-sm px-3 py-2">
+                            Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>
+                        </div>
+                        <a href="/snapshop/profile.php" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                            Profile
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                        </a>
+                        <button onclick="handleLogout()" class="block w-full text-left text-red-600 hover:text-red-700 relative group">
+                            Logout
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                    </div>
+                <?php else: ?>
+                    <!-- Mobile Sign In/Sign Up -->
+                    <div class="pt-3 space-y-2">
+                        <button onclick="openLoginModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                            Sign In
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                        <button onclick="openRegisterModal()" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                            Sign Up
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Simple JavaScript for mobile menu toggle -->
+<!-- JavaScript for mobile menu toggle and logout handling -->
 <script>
 document.getElementById('mobileMenuBtn').addEventListener('click', function() {
     const mobileMenu = document.getElementById('mobileMenu');
     mobileMenu.classList.toggle('hidden');
 });
+
+// Handle logout with localStorage clearing
+function handleLogout() {
+    fetch('/snapshop/auth/logout.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear localStorage
+                localStorage.removeItem('token');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                
+                // Show success message
+                if (typeof showToast === 'function') {
+                    showToast('Logged out successfully', 'success', 3000);
+                }
+                
+                // Refresh page to update header
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            // Force logout by clearing localStorage and refreshing
+            localStorage.clear();
+            window.location.reload();
+        });
+}
+
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id');
+    
+    if (token && userId) {
+        // User has token in localStorage, check if session is still valid
+        // This helps maintain login state across page refreshes
+        console.log('User token found in localStorage');
+        
+        // Verify token with server
+        verifyTokenWithServer(token);
+    }
+});
+
+// Function to verify token with server
+function verifyTokenWithServer(token) {
+    fetch('/snapshop/auth/verify-token.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.valid) {
+            // Token is invalid, clear localStorage
+            localStorage.clear();
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Token verification error:', error);
+        // On error, clear localStorage to be safe
+        localStorage.clear();
+        window.location.reload();
+    });
+}
 </script>

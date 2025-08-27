@@ -264,8 +264,6 @@ function seedProducts($conn) {
             }
         }
         
-        echo "Successfully seeded " . count($sampleProducts) . " products with sizes and colors!\n";
-        
     } catch (Exception $e) {
         echo "Error seeding products: " . $e->getMessage() . "\n";
     }

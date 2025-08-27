@@ -3,6 +3,8 @@
 // This component displays a single product card with all the same styling and functionality
 
 require_once __DIR__ . '/../../utils/currency.php';
+require_once __DIR__ . '/../../auth/auth-helper.php';
+session_start();
 
 $product = $GLOBALS['currentProduct'] ?? null;
 
@@ -60,34 +62,90 @@ $productId = $product['id'] ?? $product['_id'] ?? '';
             </div>
         </div>
 
+        <div class="flex gap-2 mb-2">
+            <?php if (isUserLoggedIn()): ?>
+                <button onclick="handleAddToWishlist_<?php echo $uniqueId; ?>()"
+                        class="flex-1 bg-red-100 text-red-600 py-2 px-4 rounded-lg font-medium hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-heart w-4 h-4"></i>
+                    Wishlist
+                </button>
+            <?php else: ?>
+                <button onclick="handleLoginRequired_<?php echo $uniqueId; ?>()"
+                        class="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-heart w-4 h-4"></i>
+                    Wishlist
+                </button>
+            <?php endif; ?>
+        </div>
+        
         <div class="flex gap-2">
             <button onclick="handleTitleClick_<?php echo $uniqueId; ?>()"
                     class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
                 <i class="fas fa-eye w-4 h-4"></i>
                 View Details
             </button>
-            <button onclick="handleAddToCart_<?php echo $uniqueId; ?>()"
-                    class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                <i class="fas fa-shopping-bag w-4 h-4"></i>
-                Add to Cart
-            </button>
+            <?php if (isUserLoggedIn()): ?>
+                <button onclick="handleAddToCart_<?php echo $uniqueId; ?>()"
+                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-shopping-bag w-4 h-4"></i>
+                    Add to Cart
+                </button>
+            <?php else: ?>
+                <button onclick="handleLoginRequired_<?php echo $uniqueId; ?>()"
+                        class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-600 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt w-4 h-4"></i>
+                    Login to Cart
+                </button>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
 <script>
 function handleAddToCart_<?php echo $uniqueId; ?>() {
-    const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
-    
-    if (!isLoggedIn) {
-        alert('Please login to add items to cart');
-        return;
-    }
-    
     const productId = '<?php echo $productId; ?>';
     if (productId) {
-        alert('Product added to cart successfully!');
+        // Check if toast function exists (from toast.php)
+        if (typeof showToast === 'function') {
+            showToast('Product added to cart successfully!', 'success', 3000);
+        } else {
+            alert('Product added to cart successfully!');
+        }
+        
+        // Here you can add actual cart functionality
+        // For now, just show success message
     }
+}
+
+function handleAddToWishlist_<?php echo $uniqueId; ?>() {
+    const productId = '<?php echo $productId; ?>';
+    if (productId) {
+        // Check if toast function exists (from toast.php)
+        if (typeof showToast === 'function') {
+            showToast('Product added to wishlist!', 'success', 3000);
+        } else {
+            alert('Product added to wishlist!');
+        }
+        
+        // Here you can add actual wishlist functionality
+        // For now, just show success message
+    }
+}
+
+function handleLoginRequired_<?php echo $uniqueId; ?>() {
+    // Check if toast function exists
+    if (typeof showToast === 'function') {
+        showToast('Please login to add items to cart', 'warning', 4000);
+    } else {
+        alert('Please login to add items to cart');
+    }
+    
+    // Open login modal after a short delay
+    setTimeout(() => {
+        if (typeof openLoginModal === 'function') {
+            openLoginModal();
+        }
+    }, 1000);
 }
 
 function handleTitleClick_<?php echo $uniqueId; ?>() {

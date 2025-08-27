@@ -2,35 +2,53 @@
 // Register Modal Component - to be included in home page
 session_start();
 
+// Include UI components
+require_once __DIR__ . '/../component/ui/input.php';
+require_once __DIR__ . '/../component/ui/button.php';
+
 // Handle form submission
 $error = '';
 $success = '';
 $loading = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form'])) {
-    $loading = true;
-    
-    $username = trim($_POST['username'] ?? '');
-    $firstName = trim($_POST['firstName'] ?? '');
-    $lastName = trim($_POST['lastName'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+    // Only process form submission if it's a POST request with register_form
+    // Also check if it's an AJAX request to prevent unnecessary processing
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form']) && !empty($_POST['username'])) {
+        $loading = true;
+        
+        $username = trim($_POST['username'] ?? '');
+        $firstName = trim($_POST['firstName'] ?? '');
+        $lastName = trim($_POST['lastName'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        // Debug: Log the received data
+        error_log("Register form data - Username: $username, Email: $email, FirstName: $firstName, LastName: $lastName");
+        
+        // Debug: Check if email is empty
+        if (empty($email)) {
+            error_log("Email is empty: '$email'");
+        }
     
     // Validation
     if (empty($username)) {
-        $error = 'Username is required';
+        echo json_encode(['success' => false, 'message' => 'Username is required']);
+        exit;
     } elseif (empty($firstName)) {
-        $error = 'First name is required';
+        echo json_encode(['success' => false, 'message' => 'First name is required']);
+        exit;
     } elseif (empty($lastName)) {
-        $error = 'Last name is required';
+        echo json_encode(['success' => false, 'message' => 'Last name is required']);
+        exit;
     } elseif (empty($email)) {
-        $error = 'Email is required';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Please enter a valid email address';
+        echo json_encode(['success' => false, 'message' => 'Email is required']);
+        exit;
     } elseif (empty($password)) {
-        $error = 'Password is required';
+        echo json_encode(['success' => false, 'message' => 'Password is required']);
+        exit;
     } elseif (strlen($password) < 5) {
-        $error = 'Password must be at least 5 characters long';
+        echo json_encode(['success' => false, 'message' => 'Password must be at least 5 characters long']);
+        exit;
     } else {
         try {
             // Include database connection
@@ -40,13 +58,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form'])) {
             $conn = getDatabaseConnection();
             
             if ($conn) {
+                // Debug: Test database connection
+                error_log("Database connection successful");
+                
                 $userModel = new User($conn);
                 
                 // Check if username already exists
                 if ($userModel->userExists($username)) {
-                    $error = 'Username already exists. Please choose a different one.';
+                    echo json_encode(['success' => false, 'message' => 'Username already exists. Please choose a different one.']);
+                    exit;
                 } elseif ($userModel->emailExists($email)) {
-                    $error = 'Email already registered. Please use a different email.';
+                    echo json_encode(['success' => false, 'message' => 'Email already registered. Please use a different email.']);
+                    exit;
                 } else {
                     // Create new user
                     $userData = [
@@ -57,22 +80,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form'])) {
                         'password' => password_hash($password, PASSWORD_DEFAULT)
                     ];
                     
+                    // Debug: Log the user data being sent
+                    error_log("Attempting to create user with data: " . json_encode($userData));
+                    
                     if ($userModel->createUser($userData)) {
-                        $success = 'Registration successful! You can now login.';
-                        
-                        // Clear form data after successful registration
-                        $username = $firstName = $lastName = $email = '';
+                        // Registration successful - return success response
+                        echo json_encode(['success' => true, 'message' => 'Registration successful! You can now login.']);
+                        exit;
                     } else {
-                        $error = 'Registration failed. Please try again.';
+                        // Registration failed - return error response
+                        error_log("User creation failed in User model");
+                        echo json_encode(['success' => false, 'message' => 'Registration failed. Please try again.']);
+                        exit;
                     }
                 }
                 
                 $conn->close();
             } else {
-                $error = 'Database connection failed';
+                echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+                exit;
             }
         } catch (Exception $e) {
-            $error = 'An error occurred during registration';
+            error_log("Registration error: " . $e->getMessage());
+            error_log("Registration error trace: " . $e->getTraceAsString());
+            echo json_encode(['success' => false, 'message' => 'An error occurred during registration: ' . $e->getMessage()]);
+            exit;
         }
     }
     
@@ -93,136 +125,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form'])) {
             </button>
             
             <!-- Header -->
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Register</h2>
-            
-            <!-- Success/Error Messages -->
-            <?php if (!empty($success)): ?>
-                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    <?php echo htmlspecialchars($success); ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($error)): ?>
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    <?php echo htmlspecialchars($error); ?>
-                </div>
-            <?php endif; ?>
+            <h2 class="text-2xl font-bold text-primary mb-6">Register</h2>
             
             <!-- Register Form -->
-            <form method="POST" class="space-y-6">
+            <form id="registerForm" class="space-y-6">
                 <input type="hidden" name="register_form" value="1">
                 <!-- Username Field -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value="<?php echo htmlspecialchars($username ?? ''); ?>"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="username"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your username"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'Username',
+                        'type' => 'text',
+                        'name' => 'username',
+                        'value' => htmlspecialchars($username ?? ''),
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your username'
+                    ]); ?>
                 </div>
                 
                 <!-- First Name Field -->
                 <div>
-                    <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
-                        First Name
-                    </label>
-                    <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        value="<?php echo htmlspecialchars($firstName ?? ''); ?>"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="given-name"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your first name"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'First Name',
+                        'type' => 'text',
+                        'name' => 'firstName',
+                        'value' => htmlspecialchars($firstName ?? ''),
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your first name'
+                    ]); ?>
                 </div>
                 
                 <!-- Last Name Field -->
                 <div>
-                    <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
-                        Last Name
-                    </label>
-                    <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        value="<?php echo htmlspecialchars($lastName ?? ''); ?>"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="family-name"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your last name"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'Last Name',
+                        'type' => 'text',
+                        'name' => 'lastName',
+                        'value' => htmlspecialchars($lastName ?? ''),
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your last name'
+                    ]); ?>
                 </div>
                 
                 <!-- Email Field -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="<?php echo htmlspecialchars($email ?? ''); ?>"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="email"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your email address"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'Email',
+                        'type' => 'email',
+                        'name' => 'email',
+                        'value' => htmlspecialchars($email ?? ''),
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your email address'
+                    ]); ?>
                 </div>
                 
                 <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        required
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                        autocomplete="new-password"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-colors <?php echo $loading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'; ?>"
-                        placeholder="Enter your password (min 5 characters)"
-                    />
+                    <?php echo renderInput([
+                        'label' => 'Password',
+                        'type' => 'password',
+                        'name' => 'password',
+                        'required' => true,
+                        'disabled' => $loading,
+                        'placeholder' => 'Enter your password (min 5 characters)'
+                    ]); ?>
                 </div>
                 
                 <!-- Submit Button -->
                 <div class="flex items-center justify-between">
-                    <button
-                        type="submit"
-                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                        disabled="<?php echo $loading ? 'disabled' : ''; ?>"
-                    >
-                        <?php if ($loading): ?>
-                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                            Creating Account...
-                        <?php else: ?>
-                            Register
-                        <?php endif; ?>
-                    </button>
+                    <?php echo renderButton([
+                        'type' => 'submit',
+                        'variant' => 'primary',
+                        'size' => 'lg',
+                        'className' => 'w-full',
+                        'disabled' => $loading,
+                        'loading' => $loading,
+                        'children' => $loading ? 'Creating Account...' : 'Register',
+                        'id' => 'registerSubmitBtn'
+                    ]); ?>
                 </div>
                 
                 <!-- Login Link -->
-                <div class="text-sm font-medium text-gray-600 text-center">
+                <div class="text-sm font-medium text-neutral text-center">
                     Already registered? 
                     <button
                         type="button"
                         onclick="switchToLogin()"
-                        class="text-blue-600 hover:text-blue-700 transition-colors"
+                        class="text-accent hover:text-accent/80 transition-colors"
                     >
                         Login to your account
                     </button>
@@ -260,5 +252,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_form'])) {
             if (e.key === 'Escape') {
                 closeRegisterModal();
             }
+        });
+        
+        // Handle register form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            const firstName = formData.get('firstName');
+            const lastName = formData.get('lastName');
+            const email = formData.get('email');
+            const password = formData.get('password');
+            
+            // Show loading state
+            const submitBtn = document.getElementById('registerSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>Creating Account...';
+            submitBtn.disabled = true;
+            
+            // Debug: Log the data being sent
+            console.log('Sending registration data:', { username, firstName, lastName, email, password });
+            
+            // Send registration request
+            fetch('/snapshop/auth/register.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `register_form=1&username=${encodeURIComponent(username)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    if (typeof showToast === 'function') {
+                        showToast(data.message, 'success', 5000);
+                    }
+                    
+                    // Close modal and switch to login
+                    setTimeout(() => {
+                        closeRegisterModal();
+                        openLoginModal();
+                    }, 1000);
+                } else {
+                    // Show error message
+                    if (typeof showToast === 'function') {
+                        showToast(data.message || 'Registration failed', 'error', 5000);
+                    }
+                    
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Registration error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('An error occurred during registration', 'error', 5000);
+                }
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
         });
     </script>

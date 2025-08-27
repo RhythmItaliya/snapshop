@@ -60,6 +60,9 @@ $conn = setupDatabase();
         });
     </script>
     
+    <!-- Include Toast Notifications -->
+    <?php include 'component/ui/toast.php'; ?>
+    
     <!-- Include Login Modal -->
     <?php include 'auth/login.php'; ?>
     

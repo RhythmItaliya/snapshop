@@ -37,5 +37,72 @@ class User {
             // Error creating table
         }
     }
+    
+    public function userExists($username) {
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
+    }
+    
+    public function emailExists($email) {
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
+    }
+    
+    public function createUser($userData) {
+        try {
+            // Generate unique customer ID
+            $customerId = 'CUST_' . uniqid() . '_' . time();
+            
+            $sql = "INSERT INTO users (username, first_name, last_name, email, password, customer_id) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            
+            if (!$stmt) {
+                error_log("Prepare failed: " . $this->conn->error);
+                return false;
+            }
+            
+            $stmt->bind_param("ssssss", 
+                $userData['username'], 
+                $userData['first_name'], 
+                $userData['last_name'], 
+                $userData['email'], 
+                $userData['password'], 
+                $customerId
+            );
+            
+            $result = $stmt->execute();
+            
+            if (!$result) {
+                error_log("Execute failed: " . $stmt->error);
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("createUser exception: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function authenticateUser($username, $password) {
+        $stmt = $this->conn->prepare("SELECT id, username, email, password FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            if (password_verify($password, $user['password'])) {
+                return $user;
+            }
+        }
+        
+        return false;
+    }
 }
 ?>
