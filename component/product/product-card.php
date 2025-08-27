@@ -62,41 +62,15 @@ $productId = $product['id'] ?? $product['_id'] ?? '';
             </div>
         </div>
 
-        <div class="flex gap-2 mb-2">
-            <?php if (isUserLoggedIn()): ?>
-                <button onclick="handleAddToWishlist_<?php echo $uniqueId; ?>()"
-                        class="flex-1 bg-red-100 text-red-600 py-2 px-4 rounded-lg font-medium hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
-                    <i class="fas fa-heart w-4 h-4"></i>
-                    Wishlist
-                </button>
-            <?php else: ?>
-                <button onclick="handleLoginRequired_<?php echo $uniqueId; ?>()"
-                        class="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
-                    <i class="fas fa-heart w-4 h-4"></i>
-                    Wishlist
-                </button>
-            <?php endif; ?>
-        </div>
-        
+        <!-- Add to Cart Button - Same UI as product.php -->
         <div class="flex gap-2">
-            <button onclick="handleTitleClick_<?php echo $uniqueId; ?>()"
-                    class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
-                <i class="fas fa-eye w-4 h-4"></i>
-                View Details
+            <button onclick="handleAddToCart_<?php echo $uniqueId; ?>()"
+                    class="flex-1 py-3 px-6 text-white rounded-xl font-semibold text-base flex items-center justify-center gap-2 bg-blue-600 shadow-lg hover:bg-blue-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                Add to Cart
             </button>
-            <?php if (isUserLoggedIn()): ?>
-                <button onclick="handleAddToCart_<?php echo $uniqueId; ?>()"
-                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                    <i class="fas fa-shopping-bag w-4 h-4"></i>
-                    Add to Cart
-                </button>
-            <?php else: ?>
-                <button onclick="handleLoginRequired_<?php echo $uniqueId; ?>()"
-                        class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-600 transition-colors flex items-center justify-center gap-2">
-                    <i class="fas fa-sign-in-alt w-4 h-4"></i>
-                    Login to Cart
-                </button>
-            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -104,16 +78,34 @@ $productId = $product['id'] ?? $product['_id'] ?? '';
 <script>
 function handleAddToCart_<?php echo $uniqueId; ?>() {
     const productId = '<?php echo $productId; ?>';
+    const isLoggedIn = <?php echo isUserLoggedIn() ? 'true' : 'false'; ?>;
+    
     if (productId) {
-        // Check if toast function exists (from toast.php)
-        if (typeof showToast === 'function') {
-            showToast('Product added to cart successfully!', 'success', 3000);
+        if (isLoggedIn) {
+            // Check if toast function exists (from toast.php)
+            if (typeof showToast === 'function') {
+                showToast('Product added to cart successfully!', 'success', 3000);
+            } else {
+                alert('Product added to cart successfully!');
+            }
+            
+            // Here you can add actual cart functionality
+            // For now, just show success message
         } else {
-            alert('Product added to cart successfully!');
+            // Show warning toast for non-logged-in users
+            if (typeof showToast === 'function') {
+                showToast('Please login to add items to cart', 'warning', 4000);
+            } else {
+                alert('Please login to add items to cart');
+            }
+            
+            // Open login modal after a short delay
+            setTimeout(() => {
+                if (typeof openLoginModal === 'function') {
+                    openLoginModal();
+                }
+            }, 1000);
         }
-        
-        // Here you can add actual cart functionality
-        // For now, just show success message
     }
 }
 

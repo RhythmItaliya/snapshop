@@ -230,6 +230,9 @@ if ($conn) {
     <!-- Include Footer -->
     <?php include 'component/footer.php'; ?>
 
+    <!-- Include Toast Component -->
+    <?php include 'component/ui/toast.php'; ?>
+
     <!-- JavaScript for mobile menu -->
     <script>
         // Mobile menu functionality

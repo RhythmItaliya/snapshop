@@ -75,28 +75,6 @@ if ($isLoggedIn && $product) {
     }
 }
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === 'add_to_cart') {
-            if (!$isLoggedIn) {
-                $error = 'Please login to add items to cart';
-            } else {
-                // Add to cart logic here
-                $success = 'Product added to cart successfully!';
-            }
-        } elseif ($_POST['action'] === 'toggle_wishlist') {
-            if (!$isLoggedIn) {
-                $error = 'Please login to manage wishlist';
-            } else {
-                // Toggle wishlist logic here
-                $isInWishlist = !$isInWishlist;
-                $success = $isInWishlist ? 'Product added to wishlist successfully!' : 'Product removed from wishlist';
-            }
-        }
-    }
-}
-
 // Extract product data
 if ($product) {
     $name = $product['name'] ?? 'Product Name';
@@ -327,8 +305,8 @@ if (isset($conn)) {
                                 </div>
 
                                 <!-- Action Buttons -->
-                                <form method="POST" class="flex flex-col sm:flex-row gap-4">
-                                    <button type="submit" name="action" value="add_to_cart"
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="handleAddToCart()"
                                             <?php echo $stock === 0 ? 'disabled' : ''; ?>
                                             class="flex-1 py-4 px-8 text-white rounded-xl font-semibold text-lg flex items-center justify-center gap-2 <?php echo $stock > 0 ? 'bg-blue-600 shadow-lg hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'; ?>">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,14 +315,14 @@ if (isset($conn)) {
                                         <?php echo $stock > 0 ? 'Add to Cart' : 'Out of Stock'; ?>
                                     </button>
 
-                                    <button type="submit" name="action" value="toggle_wishlist"
+                                    <button onclick="handleToggleWishlist()"
                                             class="py-4 px-6 border-2 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 <?php echo $isInWishlist ? 'text-red-500 border-red-500 bg-red-50' : 'text-green-600 border-green-600 bg-green-50'; ?>">
                                         <svg class="w-5 h-5 <?php echo $isInWishlist ? 'fill-current' : ''; ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                         </svg>
                                         <?php echo $isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'; ?>
                                     </button>
-                                </form>
+                                </div>
 
                                 <!-- Stock Information -->
                                 <div class="mt-8 pt-8 border-t border-gray-200">
@@ -366,6 +344,9 @@ if (isset($conn)) {
     <!-- Include Footer -->
     <?php include 'component/footer.php'; ?>
 
+    <!-- Include Toast Component -->
+    <?php include 'component/ui/toast.php'; ?>
+
     <!-- JavaScript for mobile menu -->
     <script>
         // Mobile menu functionality
@@ -379,6 +360,84 @@ if (isset($conn)) {
                 });
             }
         });
+
+        // Add to Cart functionality
+        function handleAddToCart() {
+            const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+            const stock = <?php echo $stock ?? 0; ?>;
+            
+            if (stock === 0) {
+                if (typeof showToast === 'function') {
+                    showToast('Product is out of stock', 'error', 3000);
+                } else {
+                    alert('Product is out of stock');
+                }
+                return;
+            }
+            
+            if (isLoggedIn) {
+                // Check if toast function exists (from toast.php)
+                if (typeof showToast === 'function') {
+                    showToast('Product added to cart successfully!', 'success', 3000);
+                } else {
+                    alert('Product added to cart successfully!');
+                }
+                
+                // Here you can add actual cart functionality
+                // For now, just show success message
+            } else {
+                // Show warning toast for non-logged-in users
+                if (typeof showToast === 'function') {
+                    showToast('Please login to add items to cart', 'warning', 4000);
+                } else {
+                    alert('Please login to add items to cart');
+                }
+                
+                // Open login modal after a short delay
+                setTimeout(() => {
+                    if (typeof openLoginModal === 'function') {
+                        openLoginModal();
+                    }
+                }, 1000);
+            }
+        }
+
+        // Toggle Wishlist functionality
+        function handleToggleWishlist() {
+            const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+            
+            if (isLoggedIn) {
+                // Here you can add actual wishlist toggle functionality
+                // For now, just show success message
+                const isInWishlist = <?php echo $isInWishlist ? 'true' : 'false'; ?>;
+                const message = isInWishlist ? 'Product removed from wishlist' : 'Product added to wishlist successfully!';
+                
+                if (typeof showToast === 'function') {
+                    showToast(message, 'success', 3000);
+                } else {
+                    alert(message);
+                }
+                
+                // Reload page to update wishlist status
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                // Show warning toast for non-logged-in users
+                if (typeof showToast === 'function') {
+                    showToast('Please login to manage wishlist', 'warning', 4000);
+                } else {
+                    alert('Please login to manage wishlist');
+                }
+                
+                // Open login modal after a short delay
+                setTimeout(() => {
+                    if (typeof openLoginModal === 'function') {
+                        openLoginModal();
+                    }
+                }, 1000);
+            }
+        }
     </script>
 </body>
 </html>
