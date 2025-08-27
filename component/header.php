@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- Wishlist Icon -->
-                <a href="/wishlist" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
+                <a href="/snapshop/wishlist" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors">
                     <i class="fas fa-heart w-5 h-5"></i>
                     <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                         0
