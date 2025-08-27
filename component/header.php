@@ -100,10 +100,25 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                 </a>
 
                 <!-- Cart Icon -->
-                <button class="relative p-2 text-gray-600 hover:text-secondary transition-colors">
+                <button onclick="openCartSidebar()" class="relative p-2 text-gray-600 hover:text-secondary transition-colors">
                     <i class="fas fa-shopping-cart w-5 h-5"></i>
-                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        0
+                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center header-cart-count">
+                        <?php 
+                        if (isset($_SESSION['user_id'])) {
+                            require_once __DIR__ . '/../modal/cart.model.php';
+                            require_once __DIR__ . '/../config/database.php';
+                            $conn = getDatabaseConnection();
+                            if ($conn) {
+                                $cartModel = new Cart($conn);
+                                echo $cartModel->getCartItemCount($_SESSION['user_id']);
+                                $conn->close();
+                            } else {
+                                echo '0';
+                            }
+                        } else {
+                            echo '0';
+                        }
+                        ?>
                     </span>
                 </button>
             </div>
@@ -251,3 +266,6 @@ function verifyTokenWithServer(token) {
     });
 }
 </script>
+
+<!-- Include Cart Sidebar Component -->
+<?php include 'component/ui/cart-sidebar.php'; ?>

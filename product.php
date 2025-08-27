@@ -365,6 +365,7 @@ if (isset($conn)) {
         function handleAddToCart() {
             const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
             const stock = <?php echo $stock ?? 0; ?>;
+            const productId = '<?php echo $productId; ?>';
             
             if (stock === 0) {
                 if (typeof showToast === 'function') {
@@ -376,15 +377,46 @@ if (isset($conn)) {
             }
             
             if (isLoggedIn) {
-                // Check if toast function exists (from toast.php)
-                if (typeof showToast === 'function') {
-                    showToast('Product added to cart successfully!', 'success', 3000);
-                } else {
-                    alert('Product added to cart successfully!');
-                }
-                
-                // Here you can add actual cart functionality
-                // For now, just show success message
+                // Add product to cart via API
+                fetch('/snapshop/api/cart-add.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        product_id: productId,
+                        quantity: 1
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (typeof showToast === 'function') {
+                            showToast('Product added to cart successfully!', 'success', 3000);
+                        } else {
+                            alert('Product added to cart successfully!');
+                        }
+                        
+                        // Update header cart count
+                        updateHeaderCartCount(data.total_items);
+                        
+                        // Show success message only, don't open cart sidebar
+                    } else {
+                        if (typeof showToast === 'function') {
+                            showToast(data.message || 'Failed to add to cart', 'error', 3000);
+                        } else {
+                            alert(data.message || 'Failed to add to cart');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Cart error:', error);
+                    if (typeof showToast === 'function') {
+                        showToast('Failed to add to cart', 'error', 3000);
+                    } else {
+                        alert('Failed to add to cart');
+                    }
+                });
             } else {
                 // Show warning toast for non-logged-in users
                 if (typeof showToast === 'function') {
@@ -464,6 +496,16 @@ if (isset($conn)) {
                         openLoginModal();
                     }
                 }, 1000);
+            }
+        }
+    </script>
+
+    <!-- Function to update header cart count -->
+    <script>
+        function updateHeaderCartCount(count) {
+            const headerCartCount = document.querySelector('.header-cart-count');
+            if (headerCartCount) {
+                headerCartCount.textContent = count;
             }
         }
     </script>
