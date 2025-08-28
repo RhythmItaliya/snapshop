@@ -48,14 +48,13 @@ if (isset($_POST['update_status']) && isset($_POST['order_id']) && isset($_POST[
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-gray-50">
-    <div class="flex">
+    <div class="flex pt-4">
         <!-- Admin Sidebar -->
         <?php include 'component/sidebar.php'; ?>
         
         <!-- Main Content Area -->
-        <main class="flex-1 ml-64 p-8">
-            <div class="w-full">
-                <div class="p-8">
+        <main class="flex-1 ml-64 bg-gray-100 min-h-screen">
+            <div class="w-full p-8 pt-20 max-w-7xl mx-auto">
                     <div class="mb-8">
                         <h1 class="text-3xl font-bold text-gray-900">Manage Orders</h1>
                         <p class="text-gray-600">View and update order statuses - Total Orders: <?php echo count($orders); ?></p>

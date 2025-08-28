@@ -2,7 +2,7 @@
 // Admin Sidebar Component
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 ?>
-<aside class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-30 overflow-y-auto">
+<aside class="fixed left-0 top-0 h-screen w-64 bg-white shadow-lg border-r border-gray-200 z-50 overflow-y-auto">
     <nav class="p-4 h-full flex flex-col">
         <!-- Header -->
         <div class="mb-6">

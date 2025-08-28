@@ -21,13 +21,13 @@ $admin = AdminAuthHelper::getAdminData();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-gray-50">
-    <div class="flex">
+    <div class="flex pt-4">
         <!-- Admin Sidebar -->
         <?php include 'component/sidebar.php'; ?>
         
         <!-- Main Content Area -->
-        <main class="flex-1 ml-64 p-8">
-            <div class="max-w-7xl mx-auto">
+        <main class="flex-1 ml-64 bg-gray-100 min-h-screen">
+            <div class="w-full p-8 pt-20 max-w-7xl mx-auto">
                 <!-- Success Message from URL -->
                 <?php if (isset($_GET['success']) && $_GET['success'] === 'product_created'): ?>
                     <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-center">

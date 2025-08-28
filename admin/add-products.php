@@ -190,13 +190,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../assets/css/tailwind.css">
 </head>
 <body class="min-h-screen bg-gray-50">
-            <div class="flex">
+    <div class="flex pt-4">
         <!-- Admin Sidebar -->
         <?php include 'component/sidebar.php'; ?>
         
         <!-- Main Content Area -->
-        <main class="flex-1 ml-64 p-8">
-            <div class="mb-8 text-center">
+        <main class="flex-1 ml-64 bg-gray-100 min-h-screen">
+            <div class="mb-8 text-center pt-20">
                 <h1 class="text-3xl font-bold text-gray-900">Add New Product</h1>
             </div>
             

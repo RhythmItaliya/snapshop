@@ -48,13 +48,13 @@ if (isset($_POST['delete_product']) && isset($_POST['product_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-gray-50">
-    <div class="flex">
+    <div class="flex pt-4">
         <!-- Admin Sidebar -->
         <?php include 'component/sidebar.php'; ?>
         
         <!-- Main Content Area -->
-        <main class="flex-1 ml-64 p-8">
-            <div class="w-full">
+        <main class="flex-1 ml-64 bg-gray-100 min-h-screen">
+            <div class="w-full p-8 pt-20 max-w-7xl mx-auto">
             <div class="mb-8">
                 <div class="flex justify-between items-center">
                     <div>
