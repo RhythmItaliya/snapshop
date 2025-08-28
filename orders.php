@@ -144,7 +144,13 @@ try {
                                             <div class="space-y-3">
                                                 <?php foreach (array_slice($order['items'] ?? [], 0, 2) as $item): ?>
                                                     <div class="flex items-center space-x-3">
-                                                        <div class="w-12 h-12 bg-gray-200 rounded-md"></div>
+                                                        <?php if (!empty($item['product_image'])): ?>
+                                                            <img src="<?php echo htmlspecialchars($item['product_image']); ?>" alt="<?php echo htmlspecialchars($item['product_name'] ?? 'Product'); ?>" class="w-12 h-12 object-cover rounded-md">
+                                                        <?php else: ?>
+                                                            <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                                                <i class="fas fa-image text-gray-400"></i>
+                                                            </div>
+                                                        <?php endif; ?>
                                                         <div class="flex-1 min-w-0">
                                                             <p class="text-sm font-medium text-gray-900 truncate"><?php echo htmlspecialchars($item['product_name'] ?? 'Product'); ?></p>
                                                             <p class="text-sm text-gray-500">Qty: <?php echo (int)$item['quantity']; ?> × ₹<?php echo number_format((float)$item['price'], 2); ?></p>
@@ -158,16 +164,23 @@ try {
                                             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                                                 <div class="text-sm text-gray-600">
                                                     <p>Total: <span class="font-semibold">₹<?php echo number_format((float)$order['total_amount'], 2); ?></span></p>
-                                                    <p>Payment: <span class="capitalize"><?php echo htmlspecialchars($order['payment_method'] ?? 'N/A'); ?></span></p>
                                                 </div>
                                                 <div class="flex items-center space-x-2">
-                                                    <?php if (in_array($order['status'], ['placed','processing'])): ?>
-                                                        <form method="POST" onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');">
+                                                    <?php 
+                                                    $orderStatus = $order['status'] ?? 'unknown';
+                                                    $canCancel = in_array($orderStatus, ['placed', 'processing', 'confirmed']);
+                                                    ?>
+                                                    
+                                                    <?php if ($canCancel): ?>
+                                                        <form method="POST" onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');" class="inline">
                                                             <input type="hidden" name="action" value="cancel">
                                                             <input type="hidden" name="id" value="<?php echo (int)$order['id']; ?>">
-                                                            <button type="submit" class="px-3 py-1.5 border border-red-500 text-red-600 rounded hover:bg-red-600 hover:text-white text-sm">Cancel Order</button>
+                                                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 rounded text-sm font-medium">
+                                                                Cancel
+                                                            </button>
                                                         </form>
                                                     <?php endif; ?>
+                                        
                                                 </div>
                                             </div>
                                         </div>
@@ -236,7 +249,7 @@ try {
                     emptyEl.classList.remove('hidden');
                     await updateEmptyState(filter);
                     if (typeof showToast === 'function') {
-                        const msg = filter === 'all' ? "No orders found. Start shopping to place your first order." : `No orders with status \"${getStatusConfig(filter).label}\" found.`;
+                        const msg = filter === 'all' ? "No orders found. Start shopping to place your first order." : `No orders with status "${getStatusConfig(filter).label}" found.`;
                         showToast(msg, 'info', 3500);
                     }
                     return;
@@ -265,7 +278,12 @@ try {
                             <div class="space-y-3">
                                 ${(order.items || []).slice(0,2).map(item => `
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-12 h-12 bg-gray-200 rounded-md"></div>
+                                        ${item.product_image ? 
+                                            `<img src="${item.product_image}" alt="${item.product_name || 'Product'}" class="w-12 h-12 object-cover rounded-md">` :
+                                            `<div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                                <i class="fas fa-image text-gray-400"></i>
+                                            </div>`
+                                        }
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium text-gray-900 truncate">${item.product_name || 'Product'}</p>
                                             <p class="text-sm text-gray-500">Qty: ${item.quantity} × ₹${Number(item.price).toFixed(2)}</p>
@@ -277,10 +295,20 @@ try {
                             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                                 <div class="text-sm text-gray-600">
                                     <p>Total: <span class="font-semibold">₹${Number(order.total_amount).toFixed(2)}</span></p>
-                                    <p>Payment: <span class="capitalize">${order.payment_method || 'N/A'}</span></p>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    ${['placed','processing'].includes(order.status) ? `<button data-cancel-id="${order.id}" class="px-3 py-1.5 border border-red-500 text-red-600 rounded hover:bg-red-600 hover:text-white text-sm">Cancel Order</button>` : ''}
+                                    ${['placed','processing','confirmed'].includes(order.status) ? 
+                                        `<button data-cancel-id="${order.id}" class="inline-flex items-center px-4 py-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-600 hover:text-white text-sm font-medium transition-colors duration-200">
+                                            <i class="fas fa-times mr-2"></i>
+                                            Cancel
+                                        </button>` : ''
+                                    }
+                                    ${order.status === 'cancelled' ? 
+                                        `<span class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                                            <i class="fas fa-ban mr-1"></i>
+                                            Cancelled
+                                        </span>` : ''
+                                    }
                                 </div>
                             </div>
                         </div>`;

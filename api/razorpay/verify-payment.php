@@ -1,5 +1,8 @@
 <?php
 // Razorpay Payment Verification API
+// Prevent any output before headers
+ob_start();
+
 session_start();
 header('Content-Type: application/json');
 
@@ -85,5 +88,15 @@ try {
         'success' => false,
         'message' => $e->getMessage()
     ]);
+} catch (Error $e) {
+    error_log("Razorpay verify payment fatal error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Internal server error occurred'
+    ]);
 }
+
+// Flush output buffer to ensure JSON response is sent
+ob_end_flush();
 ?>

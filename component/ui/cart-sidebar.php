@@ -9,7 +9,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
 <div id="cartSidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" onclick="closeCartSidebar()"></div>
 
 <!-- Cart Sidebar -->
-<div id="cartSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+<div id="cartSidebar" class="fixed right-0 top-0 h-full w-[500px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 max-w-4xl">
     <!-- Cart Header -->
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
         <h2 class="text-lg font-bold text-gray-900">Shopping Cart</h2>
