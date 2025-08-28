@@ -87,7 +87,7 @@ unset($_SESSION['payment_success']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Success - SnapShop</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     
     <!-- Lottie Animation -->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>

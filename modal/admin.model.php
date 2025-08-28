@@ -65,11 +65,11 @@ class Admin {
             
             $insert_stmt = $this->conn->prepare($insert_sql);
             
-            $permissions_users = Env::admin('permission_users') ? 1 : 0;
-            $permissions_orders = Env::admin('permission_orders') ? 1 : 0;
-            $permissions_products = Env::admin('permission_products') ? 1 : 0;
-            $permissions_payments = Env::admin('permission_payments') ? 1 : 0;
-            $permissions_settings = Env::admin('permission_settings') ? 1 : 0;
+            $permissions_users = Env::admin('permissions')['users'] ? 1 : 0;
+            $permissions_orders = Env::admin('permissions')['orders'] ? 1 : 0;
+            $permissions_products = Env::admin('permissions')['products'] ? 1 : 0;
+            $permissions_payments = Env::admin('permissions')['payments'] ? 1 : 0;
+            $permissions_settings = Env::admin('permissions')['settings'] ? 1 : 0;
             
             $insert_stmt->bind_param("sssssssss", 
                 $admin_username, $admin_email, $hashed_password, $admin_role,
@@ -79,6 +79,63 @@ class Admin {
             
             $insert_stmt->execute();
         }
+    }
+    
+    // Verify admin credentials
+    public function verifyCredentials($email_or_username, $password) {
+        // Check by both email and username
+        $sql = "SELECT * FROM admins WHERE (email = ? OR username = ?) AND is_active = 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $email_or_username, $email_or_username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            $admin = $result->fetch_assoc();
+            
+            // Verify password
+            if (password_verify($password, $admin['password'])) {
+                // Update last login
+                $this->updateLastLogin($admin['id']);
+                return $admin;
+            }
+        }
+        
+        return false;
+    }
+    
+    // Get admin by ID
+    public function getAdminById($id) {
+        $sql = "SELECT * FROM admins WHERE id = ? AND is_active = 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            return $result->fetch_assoc();
+        }
+        
+        return false;
+    }
+    
+    // Update last login time
+    private function updateLastLogin($admin_id) {
+        $sql = "UPDATE admins SET last_login = NOW() WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $admin_id);
+        $stmt->execute();
+    }
+    
+    // Check if admin exists
+    public function adminExists($username) {
+        $sql = "SELECT COUNT(*) as count FROM admins WHERE username = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        
+        return $result['count'] > 0;
     }
 }
 ?>

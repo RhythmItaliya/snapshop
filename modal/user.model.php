@@ -269,5 +269,33 @@ class User {
         
         return $stmt->execute();
     }
+    
+    // Get all users for admin
+    public function getAllUsers() {
+        $sql = "SELECT u.*, 
+                       COUNT(DISTINCT o.id) as total_orders,
+                       COUNT(CASE WHEN o.status = 'cancelled' THEN 1 END) as cancelled_orders,
+                       COALESCE(SUM(CASE WHEN o.status != 'cancelled' THEN o.total_amount ELSE 0 END), 0) as total_spent
+                FROM users u 
+                LEFT JOIN orders o ON u.id = o.user_id 
+                GROUP BY u.id 
+                ORDER BY u.created_at DESC";
+        
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            return [];
+        }
+        
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            // Decode JSON address if it exists
+            if ($row['address']) {
+                $row['address'] = json_decode($row['address'], true);
+            }
+            $users[] = $row;
+        }
+        
+        return $users;
+    }
 }
 ?>

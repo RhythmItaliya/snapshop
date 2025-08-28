@@ -27,5 +27,60 @@ class Contact {
             throw new Exception("Error creating contacts table: " . $this->conn->error);
         }
     }
+    
+    // Get all contacts for admin
+    public function getAllContacts() {
+        $sql = "SELECT * FROM contacts ORDER BY created_at DESC";
+        
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            return [];
+        }
+        
+        $contacts = [];
+        while ($row = $result->fetch_assoc()) {
+            $contacts[] = $row;
+        }
+        
+        return $contacts;
+    }
+    
+    // Update contact status
+    public function updateContactStatus($contactId, $newStatus) {
+        $sql = "UPDATE contacts SET status = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $newStatus, $contactId);
+        
+        return $stmt->execute();
+    }
+    
+    // Get contact by ID
+    public function getContactById($contactId) {
+        $sql = "SELECT * FROM contacts WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $contactId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
+    
+    // Create new contact
+    public function createContact($contactData) {
+        $sql = "INSERT INTO contacts (name, email, message, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sssss", 
+            $contactData['name'],
+            $contactData['email'],
+            $contactData['message'],
+            $contactData['ip_address'] ?? '',
+            $contactData['user_agent'] ?? ''
+        );
+        
+        return $stmt->execute();
+    }
 }
 ?>

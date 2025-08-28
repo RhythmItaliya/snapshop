@@ -229,5 +229,41 @@ class Product {
             'colors' => $colors
         ];
     }
+    
+    // Delete product by ID
+    public function deleteProduct($id) {
+        // Start transaction
+        $this->conn->begin_transaction();
+        
+        try {
+            // Delete related records first (due to foreign key constraints)
+            $delete_sizes_sql = "DELETE FROM product_sizes WHERE product_id = ?";
+            $stmt = $this->conn->prepare($delete_sizes_sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            $delete_colors_sql = "DELETE FROM product_colors WHERE product_id = ?";
+            $stmt = $this->conn->prepare($delete_colors_sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            // Delete the main product
+            $delete_product_sql = "DELETE FROM products WHERE id = ?";
+            $stmt = $this->conn->prepare($delete_product_sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            if ($stmt->affected_rows > 0) {
+                $this->conn->commit();
+                return true;
+            } else {
+                $this->conn->rollback();
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            throw $e;
+        }
+    }
 }
 ?>

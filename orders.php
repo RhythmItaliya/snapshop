@@ -6,7 +6,7 @@ session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /snapshop/auth/login.php');
+    header('Location: /snapshop/');
     exit;
 }
 
@@ -74,7 +74,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders - SnapShop</title>
     <link href="assets/css/tailwind.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-gray-50">
     <?php include 'component/header.php'; ?>

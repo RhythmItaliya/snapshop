@@ -337,5 +337,36 @@ class Order {
         $stmt->execute();
         return $stmt->affected_rows > 0;
     }
+    
+    // Get all orders for admin
+    public function getAllOrders() {
+        $sql = "SELECT o.*, u.email as user_email, u.phone as user_phone 
+                FROM orders o 
+                LEFT JOIN users u ON o.user_id = u.id 
+                ORDER BY o.created_at DESC";
+        
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            return [];
+        }
+        
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            // Get order items for each order
+            $row['items'] = $this->getOrderItems($row['id']);
+            $orders[] = $row;
+        }
+        
+        return $orders;
+    }
+    
+    // Update order status
+    public function updateOrderStatus($orderId, $newStatus) {
+        $sql = "UPDATE orders SET status = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $newStatus, $orderId);
+        
+        return $stmt->execute();
+    }
 }
 ?>
