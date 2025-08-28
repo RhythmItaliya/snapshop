@@ -347,6 +347,10 @@ if (isset($conn)) {
     <!-- Include Toast Component -->
     <?php include 'component/ui/toast.php'; ?>
 
+    <!-- Include Auth Modals -->
+    <?php include 'auth/login.php'; ?>
+    <?php include 'auth/register.php'; ?>
+
     <!-- JavaScript for mobile menu -->
     <script>
         // Mobile menu functionality

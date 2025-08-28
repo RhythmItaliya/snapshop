@@ -142,6 +142,10 @@ $wishlistCount = count($wishlist);
     <!-- Include Toast Component -->
     <?php include 'component/ui/toast.php'; ?>
 
+    <!-- Include Auth Modals -->
+    <?php include 'auth/login.php'; ?>
+    <?php include 'auth/register.php'; ?>
+
     <!-- JavaScript for wishlist functionality -->
     <script>
         // Mobile menu functionality

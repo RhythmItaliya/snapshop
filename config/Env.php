@@ -88,6 +88,22 @@ class Env {
         return $razorpay_config[$key] ?? null;
     }
     
+    // Get App configuration
+    public static function app($key = null) {
+        $app_config = [
+            'razorpay_key' => self::get('RAZORPAY_KEY'),
+            'currency' => self::get('CURRENCY'),
+            'name' => self::get('APP_NAME'),
+            'description' => self::get('APP_DESCRIPTION')
+        ];
+        
+        if ($key === null) {
+            return $app_config;
+        }
+        
+        return $app_config[$key] ?? null;
+    }
+    
     // Get admin configuration
     public static function admin($key = null) {
         $admin_config = [

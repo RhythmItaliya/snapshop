@@ -26,6 +26,12 @@ return [
     'RAZORPAY_KEY_ID' => 'rzp_test_t8qeVD7fsffjfV',
     'RAZORPAY_KEY_SECRET' => 'wynTnpWG7jyaQq4fsZwbcIi9',
     
+    // App Configuration
+    'RAZORPAY_KEY' => 'rzp_test_t8qeVD7fsffjfV',
+    'CURRENCY' => 'INR',
+    'APP_NAME' => 'Snapshop',
+    'APP_DESCRIPTION' => 'Snapshop Transaction',
+    
     // Admin Configuration
     'ADMIN_USERNAME' => 'admin',
     'ADMIN_EMAIL' => 'admin@snapshop.com',

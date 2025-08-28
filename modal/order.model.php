@@ -67,5 +67,109 @@ class Order {
             $this->conn->query($fk_sql);
         }
     }
+    
+    // Create new order
+    public function createOrder($orderData) {
+        $sql = "INSERT INTO orders (user_id, order_number, total_amount, status, payment_method, payment_id, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        
+        $stmt = $this->conn->prepare($sql);
+        $orderNumber = 'ORD-' . time() . '-' . $orderData['user_id'];
+        
+        $stmt->bind_param("isdsis", 
+            $orderData['user_id'],
+            $orderNumber,
+            $orderData['total_amount'],
+            $orderData['status'],
+            $orderData['payment_method'],
+            $orderData['payment_id'] ?? null
+        );
+        
+        if ($stmt->execute()) {
+            return $this->conn->insert_id;
+        }
+        return false;
+    }
+    
+    // Get order by Razorpay order ID
+    public function getOrderByRazorpayId($razorpayOrderId) {
+        $sql = "SELECT * FROM orders WHERE payment_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $razorpayOrderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
+    
+    // Update order
+    public function updateOrder($orderId, $updateData) {
+        $fields = [];
+        $types = "";
+        $values = [];
+        
+        foreach ($updateData as $key => $value) {
+            $fields[] = "$key = ?";
+            if (is_int($value)) {
+                $types .= "i";
+            } elseif (is_float($value)) {
+                $types .= "d";
+            } else {
+                $types .= "s";
+            }
+            $values[] = $value;
+        }
+        
+        $values[] = $orderId;
+        $types .= "i";
+        
+        $sql = "UPDATE orders SET " . implode(", ", $fields) . " WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        
+        return $stmt->execute();
+    }
+    
+    // Update order with Razorpay order ID
+    public function updateOrderRazorpayId($orderId, $razorpayOrderId) {
+        $sql = "UPDATE orders SET payment_id = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $razorpayOrderId, $orderId);
+        
+        return $stmt->execute();
+    }
+    
+    // Get order by ID
+    public function getOrderById($orderId) {
+        $sql = "SELECT * FROM orders WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $orderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
+    
+    // Get user orders
+    public function getUserOrders($userId) {
+        $sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+        
+        return $orders;
+    }
 }
 ?>

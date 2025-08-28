@@ -363,10 +363,11 @@ function updateHeaderCartCount(count) {
 
 // Handle checkout
 function handleCheckout() {
-    // Redirect to checkout page or show checkout modal
-    if (typeof showToast === 'function') {
-        showToast('Checkout functionality coming soon!', 'info', 3000);
-    }
+    // Close cart sidebar first
+    closeCartSidebar();
+    
+    // Redirect to checkout page
+    window.location.href = '/snapshop/checkout.php';
 }
 
 // Handle clear cart

@@ -56,10 +56,7 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                 <?php if (isUserLoggedIn()): ?>
                     <!-- User Menu (Logged In) -->
                     <div class="hidden sm:flex items-center space-x-3">
-                        <button onclick="handleLogout()" class="text-red-600 hover:text-red-700 relative group">
-                            Logout
-                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
-                        </button>
+                        <!-- Logout button removed - now available in profile page -->
                     </div>
                     
                     <!-- Profile Icon (Logged In) -->
@@ -171,10 +168,7 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                             Profile
                             <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                         </a>
-                        <button onclick="handleLogout()" class="block w-full text-left text-red-600 hover:text-red-700 relative group">
-                            Logout
-                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
-                        </button>
+                        <!-- Logout button removed - now available in profile page -->
                     </div>
                 <?php else: ?>
                     <!-- Mobile Sign In/Sign Up -->
@@ -201,36 +195,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', function() {
     mobileMenu.classList.toggle('hidden');
 });
 
-// Handle logout with localStorage clearing
-function handleLogout() {
-    fetch('/snapshop/auth/logout.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Clear localStorage
-                localStorage.removeItem('token');
-                localStorage.removeItem('user_id');
-                localStorage.removeItem('username');
-                localStorage.removeItem('email');
-                
-                // Show success message
-                if (typeof showToast === 'function') {
-                    showToast('Logged out successfully', 'success', 3000);
-                }
-                
-                // Redirect to homepage with success message
-                setTimeout(() => {
-                    window.location.href = '/snapshop/?logout=success';
-                }, 1000);
-            }
-        })
-        .catch(error => {
-            console.error('Logout error:', error);
-            // Force logout by clearing localStorage and refreshing
-            localStorage.clear();
-            window.location.reload();
-        });
-}
+// Logout functionality moved to profile page
 
 // Check if user is logged in on page load
 document.addEventListener('DOMContentLoaded', function() {
