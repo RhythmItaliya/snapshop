@@ -3,92 +3,84 @@
 session_start();
 header('Content-Type: application/json');
 
-// Check if user is logged in
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/Env.php';
+require_once __DIR__ . '/../../modal/order.model.php';
+
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not authenticated']);
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }
 
-// Get request data
-$input = json_decode(file_get_contents('php://input'), true);
-$razorpayPaymentId = $input['razorpay_payment_id'] ?? '';
-$razorpayOrderId = $input['razorpay_order_id'] ?? '';
-$razorpaySignature = $input['razorpay_signature'] ?? '';
-
-if (empty($razorpayPaymentId) || empty($razorpayOrderId) || empty($razorpaySignature)) {
-    echo json_encode(['success' => false, 'message' => 'Missing payment verification data']);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit;
 }
-
-// Include required files
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/Env.php';
-require_once __DIR__ . '/../modal/order.model.php';
 
 try {
-    // Get database connection
-    $conn = getDatabaseConnection();
+    $input = json_decode(file_get_contents('php://input'), true);
     
+    if (!$input || !isset($input['razorpay_payment_id']) || !isset($input['razorpay_order_id']) || !isset($input['razorpay_signature'])) {
+        throw new Exception('Payment verification data is required');
+    }
+
+    $razorpayPaymentId = $input['razorpay_payment_id'];
+    $razorpayOrderId = $input['razorpay_order_id'];
+    $razorpaySignature = $input['razorpay_signature'];
+
+    // Get Razorpay credentials
+    $razorpayConfig = Env::razorpay();
+    $keySecret = $razorpayConfig['key_secret'];
+
+    // Verify signature
+    $expectedSignature = hash_hmac('sha256', $razorpayOrderId . '|' . $razorpayPaymentId, $keySecret);
+    
+    if (!hash_equals($expectedSignature, $razorpaySignature)) {
+        throw new Exception('Invalid payment signature');
+    }
+
+    $conn = getDatabaseConnection();
     if (!$conn) {
         throw new Exception('Database connection failed');
     }
-    
-    // Get Razorpay credentials
-    $razorpayKeyId = Env::razorpay('key_id');
-    $razorpayKeySecret = Env::razorpay('key_secret');
-    
-    if (!$razorpayKeyId || !$razorpayKeySecret) {
-        throw new Exception('Razorpay credentials not configured');
-    }
-    
-    // Verify signature (in production, implement proper signature verification)
-    // For now, we'll assume the payment is successful
-    $isSignatureValid = true; // Placeholder for actual verification
-    
-    if (!$isSignatureValid) {
-        throw new Exception('Payment signature verification failed');
-    }
-    
-    // Update order status in database
+
+    // Find order by Razorpay order ID
     $orderModel = new Order($conn);
-    
-    // Get order by Razorpay order ID
     $order = $orderModel->getOrderByRazorpayId($razorpayOrderId);
     
     if (!$order) {
         throw new Exception('Order not found');
     }
-    
-    // Update order status to completed
+
+    if ($order['user_id'] != $_SESSION['user_id']) {
+        throw new Exception('Order does not belong to user');
+    }
+
+    // Update order status to confirmed
     $updateData = [
-        'status' => 'completed',
-        'payment_id' => $razorpayPaymentId,
-        'payment_status' => 'success',
-        'completed_at' => date('Y-m-d H:i:s')
+        'status' => 'confirmed',
+        'payment_id' => $razorpayPaymentId
     ];
     
-    if (!$orderModel->updateOrder($order['id'], $updateData)) {
+    $success = $orderModel->updateOrder($order['id'], $updateData);
+    
+    if (!$success) {
         throw new Exception('Failed to update order status');
     }
-    
-    // Clear user's cart after successful payment
-    require_once __DIR__ . '/../modal/cart.model.php';
-    $cartModel = new Cart($conn);
-    $cartModel->clearCart($_SESSION['user_id']);
-    
+
+    $conn->close();
+
     echo json_encode([
         'success' => true,
         'message' => 'Payment verified successfully',
-        'payment' => [
-            'id' => $razorpayPaymentId,
-            'order_id' => $razorpayOrderId,
-            'status' => 'captured',
-            'amount' => $order['total_amount'] * 100, // Return in paise for consistency
-            'currency' => $order['currency']
-        ]
+        'order_id' => $order['id'],
+        'payment_id' => $razorpayPaymentId
     ]);
-    
+
 } catch (Exception $e) {
+    http_response_code(400);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()

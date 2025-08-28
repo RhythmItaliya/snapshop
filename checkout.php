@@ -36,9 +36,33 @@ if ($conn) {
             throw new Exception("User not found");
         }
         
-        // Get cart data
-        $cartModel = new Cart($conn);
-        $cart = $cartModel->getCartItems($_SESSION['user_id']);
+        // Ensure address is properly structured
+        if (!isset($user['address']) || !is_array($user['address'])) {
+            $user['address'] = [
+                'street_address' => '',
+                'apartment' => '',
+                'city' => '',
+                'state' => '',
+                'country' => '',
+                'zip_code' => ''
+            ];
+        }
+        
+        // Get cart data with detailed product information
+        $cart = [];
+        $cartResponse = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/snapshop/api/cart-items-detailed.php');
+        if ($cartResponse !== false) {
+            $cartData = json_decode($cartResponse, true);
+            if ($cartData && $cartData['success']) {
+                $cart = $cartData['items'];
+            }
+        }
+        
+        // Fallback to basic cart if detailed API fails
+        if (empty($cart)) {
+            $cartModel = new Cart($conn);
+            $cart = $cartModel->getCartItems($_SESSION['user_id']);
+        }
         
         $loading = false;
         
@@ -145,9 +169,21 @@ if ($conn) {
                 <a href="/snapshop/products.php" class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors">
                     Browse Products
                 </a>
-            </div>
-        <?php else: ?>
-            <!-- Checkout Content -->
+            <?php else: ?>
+                            <!-- Debug Information (remove in production) -->
+            <?php if (isset($_GET['debug']) && $_GET['debug'] === '1'): ?>
+                <div class="container mx-auto px-4 py-4">
+                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+                        <h4 class="font-bold">Debug Information:</h4>
+                        <h5 class="font-semibold mt-2">User Data:</h5>
+                        <pre class="text-sm mt-1"><?php echo htmlspecialchars(print_r($user, true)); ?></pre>
+                        <h5 class="font-semibold mt-2">Cart Data:</h5>
+                        <pre class="text-sm mt-1"><?php echo htmlspecialchars(print_r($cart, true)); ?></pre>
+                    </div>
+                </div>
+            <?php endif; ?>
+                
+                <!-- Checkout Content -->
             <div class="container mx-auto px-4 py-16">
                 <h1 class="text-3xl font-bold text-primary mb-8">Checkout</h1>
 
@@ -155,6 +191,29 @@ if ($conn) {
                     <!-- Shipping Information Form -->
                     <div class="bg-white rounded-2xl shadow-lg p-8">
                         <h2 class="text-2xl font-bold text-primary mb-6">Shipping Information</h2>
+                        
+                        <?php 
+                        // Check if user has incomplete profile
+                        $hasIncompleteProfile = empty($user['first_name']) || empty($user['last_name']) || empty($user['phone']) || 
+                                             empty($user['address']['street_address']) || empty($user['address']['city']) || 
+                                             empty($user['address']['state']) || empty($user['address']['country']);
+                        
+                        if ($hasIncompleteProfile): ?>
+                            <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                                        <div>
+                                            <p class="text-blue-800 font-medium">Complete Your Profile</p>
+                                            <p class="text-blue-700 text-sm">Some information is missing. Please fill in all required fields to complete your checkout.</p>
+                                        </div>
+                                    </div>
+                                    <a href="/snapshop/profile.php" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                                        Complete Profile
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <form method="POST" class="space-y-6">
                             <input type="hidden" name="checkout_form" value="1">
@@ -164,14 +223,16 @@ if ($conn) {
                                     'label' => 'First Name',
                                     'name' => 'firstName',
                                     'value' => htmlspecialchars($user['first_name'] ?? ''),
-                                    'required' => true
+                                    'required' => true,
+                                    'placeholder' => 'Enter your first name'
                                 ]); ?>
                                 
                                 <?php echo renderInput([
                                     'label' => 'Last Name',
                                     'name' => 'lastName',
                                     'value' => htmlspecialchars($user['last_name'] ?? ''),
-                                    'required' => true
+                                    'required' => true,
+                                    'placeholder' => 'Enter your last name'
                                 ]); ?>
                             </div>
 
@@ -194,7 +255,7 @@ if ($conn) {
                             <?php echo renderInput([
                                 'label' => 'Address',
                                 'name' => 'address',
-                                'value' => htmlspecialchars($user['address']['street_address'] ?? ''),
+                                'value' => htmlspecialchars($user['address']['street_address'] ?? $user['address'] ?? ''),
                                 'required' => true
                             ]); ?>
 
@@ -261,22 +322,35 @@ if ($conn) {
                         <h2 class="text-2xl font-bold text-primary mb-6">Order Summary</h2>
 
                         <div class="space-y-4 mb-6">
-                            <?php foreach ($cart as $item): ?>
-                                <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-xl">
-                                    <div class="flex-shrink-0">
-                                        <img src="<?php echo htmlspecialchars($item['image'] ?? 'assets/img/placeholder.jpg'); ?>" 
-                                             alt="<?php echo htmlspecialchars($item['name']); ?>" 
-                                             class="w-16 h-16 object-cover rounded-lg">
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-medium text-gray-900 truncate">
-                                            <?php echo htmlspecialchars($item['name']); ?>
-                                        </h3>
-                                        <p class="text-sm text-gray-500">
-                                            Size: <?php echo htmlspecialchars($item['size'] ?? 'N/A'); ?> | 
-                                            Color: <?php echo htmlspecialchars($item['color'] ?? 'N/A'); ?>
-                                        </p>
-                                    </div>
+                            <?php if (empty($cart)): ?>
+                                <div class="text-center py-8">
+                                    <p class="text-gray-500">No items in cart</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($cart as $item): ?>
+                                                                        <?php if (!isset($item['product']['name']) || !isset($item['quantity']) || !isset($item['price'])): ?>
+                                        <div class="p-4 border border-red-200 bg-red-50 rounded-xl">
+                                            <p class="text-red-600 text-sm">Invalid cart item data</p>
+                                            <pre class="text-xs mt-2"><?php echo htmlspecialchars(print_r($item, true)); ?></pre>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-xl">
+                                            <div class="flex-shrink-0">
+                                                <?php if (!empty($item['product']['image']) && $item['product']['image'] !== 'N/A'): ?>
+                                                    <img src="<?php echo htmlspecialchars($item['product']['image']); ?>" 
+                                                         alt="<?php echo htmlspecialchars($item['product']['name']); ?>" 
+                                                         class="w-16 h-16 object-cover rounded-lg">
+                                                <?php else: ?>
+                                                    <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-image text-gray-400"></i>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-sm font-medium text-gray-900 truncate">
+                                                    <?php echo htmlspecialchars($item['product']['name']); ?>
+                                                </h3>
+                                            </div>
                                     <div class="flex items-center space-x-3">
                                         <div class="text-sm text-gray-500">
                                             Qty: <?php echo $item['quantity']; ?>
@@ -287,8 +361,10 @@ if ($conn) {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
 
                         <div class="border-t border-gray-200 pt-4 space-y-3">
@@ -333,6 +409,29 @@ if ($conn) {
             if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', function() {
                     mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Form validation
+            const checkoutForm = document.querySelector('form[method="POST"]');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    const requiredFields = checkoutForm.querySelectorAll('[required]');
+                    let isValid = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('border-red-500');
+                        } else {
+                            field.classList.remove('border-red-500');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert('Please fill in all required fields.');
+                    }
                 });
             }
         });

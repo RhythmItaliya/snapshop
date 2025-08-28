@@ -91,6 +91,14 @@ class Order {
         return false;
     }
     
+    // Add order item
+    public function addOrderItem($orderId, $productId, $quantity, $price) {
+        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("iiid", $orderId, $productId, $quantity, $price);
+        return $stmt->execute();
+    }
+
     // Get order by Razorpay order ID
     public function getOrderByRazorpayId($razorpayOrderId) {
         $sql = "SELECT * FROM orders WHERE payment_id = ?";
