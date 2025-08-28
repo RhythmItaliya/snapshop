@@ -39,10 +39,7 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
                 <?php if (isUserLoggedIn()): ?>
-                <a href="/snapshop/profile.php" class="text-gray-600 hover:text-secondary relative group">
-                    Profile
-                    <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
-                </a>
+                <!-- Profile link removed - icon is available on the right side -->
                 <?php endif; ?>
             </nav>
 
@@ -164,10 +161,7 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                 <?php if (isUserLoggedIn()): ?>
                     <!-- Mobile User Menu (Logged In) -->
                     <div class="pt-3 space-y-2">
-                        <a href="/snapshop/profile.php" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
-                            Profile
-                            <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
-                        </a>
+                        <!-- Profile link removed - icon is available on the right side -->
                         <!-- Logout button removed - now available in profile page -->
                     </div>
                 <?php else: ?>

@@ -33,16 +33,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if ($orderId > 0) {
                 $ok = $orderModel->cancelOrder($orderId, $_SESSION['user_id']);
                 if ($ok) {
-                    echo "<script>if (typeof showToast === 'function') { showToast('Order cancelled successfully!', 'success', 3000); }</script>";
+                    addToast('Order cancelled successfully!', 'success', 3000);
                 } else {
-                    echo "<script>if (typeof showToast === 'function') { showToast('Cannot cancel this order', 'error', 3000); }</script>";
+                    addToast('Cannot cancel this order', 'error', 3000);
                 }
             }
             $conn->close();
         }
     } catch (Exception $e) {
-        echo "<script>if (typeof showToast === 'function') { showToast('" . addslashes($e->getMessage()) . "', 'error', 4000); }</script>";
+        addToast($e->getMessage(), 'error', 4000);
     }
+    
+    // Redirect to prevent form resubmission
+    $redirectUrl = '/snapshop/orders.php';
+    if (isset($_GET['status']) && $_GET['status'] !== '') {
+        $redirectUrl .= '?status=' . urlencode($_GET['status']);
+    }
+    header('Location: ' . $redirectUrl);
+    exit;
 }
 
 // Fetch orders server-side
