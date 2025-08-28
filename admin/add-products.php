@@ -215,8 +215,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
             
-            <div class="w-full max-w-4xl">
-                <div class="bg-white shadow rounded-lg p-6">
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="bg-white shadow rounded-lg p-6 w-full">
                     <form id="addProductForm" method="POST" enctype="multipart/form-data" class="space-y-6">
                         <!-- Product Image -->
                         <div>

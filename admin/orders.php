@@ -76,13 +76,13 @@ if (isset($_POST['update_status']) && isset($_POST['order_id']) && isset($_POST[
                     <?php endif; ?>
                     
                     <?php if (!empty($orders)): ?>
-                        <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <div class="bg-white shadow rounded-lg overflow-hidden w-full">
                             <div class="px-6 py-4 border-b border-gray-200">
                                 <h3 class="text-lg font-medium text-gray-900">All Orders (<?php echo count($orders); ?>)</h3>
                             </div>
                             
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
