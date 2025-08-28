@@ -171,5 +171,55 @@ class Order {
         
         return $orders;
     }
+
+    // Get items for an order
+    public function getOrderItems($orderId) {
+        $sql = "SELECT oi.*, p.name AS product_name FROM order_items oi LEFT JOIN products p ON p.id = oi.product_id WHERE order_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $orderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        return $items;
+    }
+
+    // Get user orders with items and optional status filter
+    public function getUserOrdersWithItems($userId, $status = null) {
+        $query = "SELECT * FROM orders WHERE user_id = ?";
+        if (!empty($status) && $status !== 'all') {
+            $query .= " AND status = ?";
+        }
+        $query .= " ORDER BY created_at DESC";
+
+        if (!empty($status) && $status !== 'all') {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("is", $userId, $status);
+        } else {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("i", $userId);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $row['items'] = $this->getOrderItems((int)$row['id']);
+            $orders[] = $row;
+        }
+        return $orders;
+    }
+
+    // Cancel order if it belongs to the user and is still cancelable
+    public function cancelOrder($orderId, $userId) {
+        // Only allow cancel if status is 'placed' or 'processing'
+        $sql = "UPDATE orders SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status IN ('placed','processing')";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $orderId, $userId);
+        $stmt->execute();
+        return $stmt->affected_rows > 0;
+    }
 }
 ?>

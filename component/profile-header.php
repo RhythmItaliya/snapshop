@@ -5,6 +5,10 @@
 // Get the current page title and description
 $pageTitle = $pageTitle ?? 'Profile';
 $pageDescription = $pageDescription ?? 'Manage your account settings';
+
+// Determine current status query if present
+$currentStatus = isset($_GET['status']) && $_GET['status'] !== '' ? $_GET['status'] : 'all';
+$ordersHref = '/snapshop/orders.php?status=' . urlencode($currentStatus);
 ?>
 
 <!-- Page Header -->
@@ -32,7 +36,7 @@ $pageDescription = $pageDescription ?? 'Manage your account settings';
             <i class="fas fa-user mr-2"></i>
             Profile
         </a>
-        <a href="/snapshop/orders.php" 
+        <a id="ordersNavLink" href="<?php echo htmlspecialchars($ordersHref); ?>" 
            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors <?php echo $pageTitle === 'My Orders' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'; ?>">
             <i class="fas fa-shopping-bag mr-2"></i>
             My Orders
