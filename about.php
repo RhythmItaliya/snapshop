@@ -24,26 +24,36 @@ require_once __DIR__ . "/component/ui/toast.php";
 
     <!-- Main Content -->
     <main class="pt-16">
-        <!-- Simple About Section -->
-        <section class="min-h-screen bg-light py-8 px-4">
-            <div class="max-w-6xl mx-auto mt-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div class="order-2 lg:order-1">
-                        <img
-                            src="assets/img/contact.jpg"
-                            alt="About us"
-                            class="w-full h-auto rounded-3xl shadow-xl object-cover"
-                            style="min-height: 420px;"
-                        />
+        <!-- About Section -->
+        <section class="min-h-screen bg-light py-12 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <!-- Image Section -->
+                    <div class="order-2 lg:order-1" data-aos="fade-right" data-aos-delay="200">
+                        <div class="flex justify-center lg:justify-start">
+                            <img
+                                src="assets/img/contact.jpg"
+                                alt="About SnapShop - Modern Fashion Store"
+                                class="w-64 h-64 lg:w-80 lg:h-80 rounded-2xl shadow-lg object-cover"
+                            />
+                        </div>
                     </div>
 
-                    <div class="order-1 lg:order-2">
-                        <h1 class="text-3xl lg:text-4xl font-bold text-primary mb-4">About Us</h1>
-                        <p class="text-neutral text-lg leading-8">
-                            We are a modern fashion store focused on quality, comfort, and value. Our mission is simple:
-                            make great style easy for everyone. From everyday essentials to trend-forward pieces, we
-                            curate products you'll love to wear.
-                        </p>
+                    <!-- Content Section -->
+                    <div class="order-1 lg:order-2" data-aos="fade-left" data-aos-delay="400">
+                        <div class="space-y-6">
+                            <h1 class="text-3xl lg:text-4xl font-bold text-primary">About SnapShop</h1>
+                            <p class="text-neutral text-lg leading-relaxed">
+                                We are a modern fashion store focused on quality, comfort, and value. Our mission is simple:
+                                make great style easy for everyone. From everyday essentials to trend-forward pieces, we
+                                curate products you'll love to wear.
+                            </p>
+                            <p class="text-neutral text-lg leading-relaxed">
+                                Founded with the vision of making fashion accessible and affordable, SnapShop brings you
+                                carefully selected pieces that blend style with functionality. We believe everyone deserves
+                                to look and feel their best.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

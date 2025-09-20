@@ -25,24 +25,24 @@ require_once __DIR__ . "/component/ui/toast.php";
     <!-- Main Content -->
     <main class="pt-16">
         <!-- Contact Section with Form -->
-        <section class="min-h-screen bg-light py-8 px-4">
+        <section class="min-h-screen bg-light py-12 px-4">
             <div class="max-w-6xl mx-auto">
                 <!-- Main Content -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <!-- Image Section -->
                     <div class="order-2 lg:order-1" data-aos="fade-right" data-aos-delay="200">
-                        <div class="relative">
+                        <div class="flex justify-center lg:justify-start">
                             <img
                                 src="assets/img/contact.jpg"
-                                alt="Contact Us"
-                                class="w-full h-auto rounded-3xl shadow-xl object-cover"
-                                style="min-height: 500px;"
+                                alt="Contact SnapShop - Get in Touch"
+                                class="w-64 h-64 lg:w-80 lg:h-80 rounded-2xl shadow-lg object-cover"
                             />
                         </div>
                     </div>
 
-                    <!-- Right Side - Contact Form -->
+                    <!-- Contact Form Section -->
                     <div class="order-1 lg:order-2" data-aos="fade-left" data-aos-delay="400">
-                        <div class="bg-white rounded-3xl shadow-xl p-8 lg:p-12">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 lg:p-8">
                             <div class="mb-8">
                                 <h3 class="text-2xl lg:text-3xl font-bold text-primary mb-3">Send us a Message</h3>
                                 <p class="text-neutral">
