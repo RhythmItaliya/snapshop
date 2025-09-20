@@ -15,8 +15,6 @@ class Contact {
             email VARCHAR(255) NOT NULL,
             message TEXT NOT NULL,
             status ENUM('pending', 'read', 'replied') DEFAULT 'pending',
-            ip_address VARCHAR(45) DEFAULT '',
-            user_agent TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_email_created (email, created_at),
@@ -70,14 +68,12 @@ class Contact {
     
     // Create new contact
     public function createContact($contactData) {
-        $sql = "INSERT INTO contacts (name, email, message, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sssss", 
+        $stmt->bind_param("sss", 
             $contactData['name'],
             $contactData['email'],
-            $contactData['message'],
-            $contactData['ip_address'] ?? '',
-            $contactData['user_agent'] ?? ''
+            $contactData['message']
         );
         
         return $stmt->execute();

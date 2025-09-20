@@ -30,11 +30,11 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                     Sale
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/about" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/about.php" class="text-gray-600 hover:text-secondary relative group">
                     About Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/snapshop/contact" class="text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/contact.php" class="text-gray-600 hover:text-secondary relative group">
                     Contact Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
@@ -143,11 +143,11 @@ require_once __DIR__ . '/../auth/auth-helper.php';
                     Sale
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/about" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/about.php" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                     About Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
-                <a href="/contact" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
+                <a href="/snapshop/contact.php" class="block w-full text-left text-gray-600 hover:text-secondary relative group">
                     Contact Us
                     <span class="absolute bottom-0 left-0 h-0.5 bg-secondary w-0 group-hover:w-full transition-all duration-300"></span>
                 </a>
