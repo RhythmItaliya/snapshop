@@ -5,21 +5,21 @@ $slides = [
         'title' => "Men's Collection",
         'subtitle' => 'Sophisticated Style',
         'tag' => "Men's Fashion",
-        'link' => '/products?category=men',
+        'link' => '/snapshop/products.php?category=men',
     ],
     [
         'image' => 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
         'title' => "Women's Collection",
         'subtitle' => 'Elegant & Chic',
         'tag' => "Women's Fashion",
-        'link' => '/products?category=women',
+        'link' => '/snapshop/products.php?category=women',
     ],
     [
         'image' => 'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80',
         'title' => 'New Arrivals',
         'subtitle' => 'Latest Trends',
         'tag' => 'Hot & New',
-        'link' => '/products?category=new',
+        'link' => '/snapshop/products.php?category=sale',
     ],
 ];
 ?>
@@ -27,7 +27,7 @@ $slides = [
 <link rel="stylesheet" type="text/css" href="node_modules/slick-carousel/slick/slick.css"/>
 <link rel="stylesheet" type="text/css" href="node_modules/slick-carousel/slick/slick-theme.css"/>
 
-<style>
+<style> 
 .hero-carousel {
     width: 100%;
     height: 100%;
