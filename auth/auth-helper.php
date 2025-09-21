@@ -2,6 +2,12 @@
 // Auth Helper Functions
 // Provides utility functions for authentication
 
+function startSessionIfNotStarted() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
+
 function isUserLoggedIn() {
     return isset($_SESSION['user_id']) && isset($_SESSION['token']);
 }

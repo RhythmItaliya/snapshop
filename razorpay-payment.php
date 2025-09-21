@@ -1,6 +1,7 @@
 <?php
 // Razorpay Payment Page
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: /snapshop/');

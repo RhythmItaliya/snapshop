@@ -2,8 +2,8 @@
 // Token Verification Endpoint
 // Validates tokens sent from localStorage
 
-session_start();
 require_once 'auth-helper.php';
+startSessionIfNotStarted();
 
 // Set JSON response header
 header('Content-Type: application/json');

@@ -1,6 +1,7 @@
 <?php
 // About Us Page
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Include required files
 require_once __DIR__ . "/config/database.php";

@@ -1,6 +1,7 @@
 <?php
 // Admin Panel Main Entry Point
-session_start();
+require_once __DIR__ . '/../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Require admin authentication
 require_once 'auth/admin-auth-helper.php';

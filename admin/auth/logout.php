@@ -1,6 +1,7 @@
 <?php
 // Admin Logout
-session_start();
+require_once __DIR__ . '/../../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Use AdminAuthHelper to properly destroy session
 require_once 'admin-auth-helper.php';

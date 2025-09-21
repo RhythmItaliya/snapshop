@@ -3,7 +3,8 @@
 // Prevent any output before headers
 ob_start();
 
-session_start();
+require_once __DIR__ . '/../../auth/auth-helper.php';
+startSessionIfNotStarted();
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../config/database.php';

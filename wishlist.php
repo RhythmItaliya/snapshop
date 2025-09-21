@@ -3,7 +3,8 @@
 // This page displays the user's wishlist with clear functionality
 
 // Start session for user authentication
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Include necessary files
 require_once __DIR__ . '/config/database.php';

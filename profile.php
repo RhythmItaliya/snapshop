@@ -2,7 +2,8 @@
 // User Profile Page - Complete profile management system
 
 // Start session for user authentication
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

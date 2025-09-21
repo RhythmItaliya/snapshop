@@ -1,6 +1,7 @@
 <?php
 // Orders API: GET /api/orders.php?status=all|placed|... and POST /api/orders.php?action=cancel&id=ORDER_ID
-session_start();
+require_once __DIR__ . '/../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // If accessed directly from the browser (expecting HTML), redirect to orders page
 $accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';

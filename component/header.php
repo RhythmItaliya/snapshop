@@ -1,6 +1,6 @@
 <?php
-session_start();
 require_once __DIR__ . '/../auth/auth-helper.php';
+startSessionIfNotStarted();
 // Header Component - with authentication logic
 ?>
 <header class="bg-white shadow-sm fixed w-full z-50">

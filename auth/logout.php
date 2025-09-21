@@ -1,6 +1,7 @@
 <?php
 // Logout functionality
-session_start();
+require_once __DIR__ . '/auth-helper.php';
+startSessionIfNotStarted();
 
 // Clear all session data
 session_unset();

@@ -3,7 +3,8 @@
 // Access via: /snapshop/product.php?id=13
 
 // Start session for user authentication
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Check if product ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {

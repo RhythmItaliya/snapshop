@@ -1,6 +1,7 @@
 <?php
 // Toast Notification System - PHP version of React Toast component
-session_start();
+require_once __DIR__ . '/../../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Initialize toast array if not exists
 if (!isset($_SESSION['toasts'])) {

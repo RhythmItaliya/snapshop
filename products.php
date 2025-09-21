@@ -3,7 +3,8 @@
 // This page displays all products with filtering and sorting capabilities
 
 // Start session for user authentication
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Include all necessary utilities and components
 require_once __DIR__ . '/config/database.php';

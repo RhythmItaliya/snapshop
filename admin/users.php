@@ -4,7 +4,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Admin Users Management Page
-session_start();
+require_once __DIR__ . '/../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Require admin authentication
 require_once 'auth/admin-auth-helper.php';

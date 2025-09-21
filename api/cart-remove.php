@@ -2,7 +2,8 @@
 // Cart Remove API - Remove items from cart
 
 // Start session for user authentication
-session_start();
+require_once __DIR__ . '/../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Set JSON response header
 header('Content-Type: application/json');

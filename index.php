@@ -1,7 +1,8 @@
 <?php
 // Main entry point - handles home page only
 // Product and products routing is handled by .htaccess
-session_start();
+require_once __DIR__ . '/auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Handle logout success message
 $logoutMessage = '';

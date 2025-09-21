@@ -1,6 +1,7 @@
 <?php
 // Admin Login Page
-session_start();
+require_once __DIR__ . '/../../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Check if admin is already logged in
 if (isset($_SESSION['admin_id'])) {

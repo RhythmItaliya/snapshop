@@ -2,8 +2,8 @@
 // ProductDetails Component - Converted from React
 // This component displays detailed product information with the same UI design
 
-session_start();
 require_once __DIR__ . '/../../auth/auth-helper.php';
+startSessionIfNotStarted();
 
 // Include currency utility
 require_once __DIR__ . '/../../utils/currency.php';

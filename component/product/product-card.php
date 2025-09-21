@@ -4,7 +4,7 @@
 
 require_once __DIR__ . '/../../utils/currency.php';
 require_once __DIR__ . '/../../auth/auth-helper.php';
-session_start();
+startSessionIfNotStarted();
 
 $product = $GLOBALS['currentProduct'] ?? null;
 
